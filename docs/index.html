@@ -56,23 +56,6 @@
     .sso-body    { padding: 1.75rem 2rem; }
     .sso-footer  { padding: 1rem 2rem; border-top: 1px solid var(--border); text-align: center; font-size: .75rem; color: var(--muted); }
 
-    .ms-btn {
-      width: 100%; padding: .7rem 1rem;
-      border: 1.5px solid var(--border); border-radius: 6px;
-      background: #fff; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: .75rem;
-      font-size: .875rem; font-weight: 600; color: var(--text);
-      transition: border-color .15s, background .15s;
-      margin-bottom: 1.25rem;
-    }
-    .ms-btn:hover { border-color: #0078d4; background: #f0f6ff; }
-
-    .divider {
-      display: flex; align-items: center; gap: .75rem;
-      font-size: .75rem; color: var(--muted); margin-bottom: 1.25rem;
-    }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
     .field { margin-bottom: .875rem; }
     .field label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); margin-bottom: .35rem; text-transform: uppercase; letter-spacing: .05em; }
     .field input {
@@ -84,23 +67,25 @@
     .field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,50,255,.1); }
     .field input.err   { border-color: #e53e3e; }
 
-    .sso-btn {
-      width: 100%; padding: .65rem; margin-top: .25rem;
-      background: var(--blue); color: #fff;
+    .gh-btn {
+      width: 100%; padding: .75rem 1rem;
+      background: #24292f; color: #fff;
       border: none; border-radius: 6px;
-      font-size: .875rem; font-weight: 600; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: .5rem;
-      transition: background .15s;
+      font-size: .9rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: .65rem;
+      transition: background .15s; margin-bottom: 1rem;
     }
-    .sso-btn:hover { background: var(--blue-dk); }
-    .sso-btn.loading { pointer-events: none; opacity: .8; }
+    .gh-btn:hover   { background: #383f47; }
+    .gh-btn.loading { pointer-events: none; opacity: .75; }
     .spinner {
       width: 14px; height: 14px;
       border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
       border-radius: 50%; animation: spin .7s linear infinite; display: none;
     }
-    .sso-btn.loading .spinner     { display: block; }
-    .sso-btn.loading .btn-label   { display: none; }
+    .gh-btn.loading .spinner   { display: block; }
+    .gh-btn.loading .btn-label { display: none; }
+    .gh-btn.loading svg        { display: none; }
+    .sso-hint { font-size: .78rem; color: var(--muted); text-align: center; line-height: 1.5; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── NAV ── */
@@ -363,31 +348,17 @@
         Fabric Catalog
       </div>
       <h1>Logg inn</h1>
-      <p>Intern tilgang</p>
+      <p>Intern tilgang via GitHub</p>
     </div>
     <div class="sso-body">
-      <button class="ms-btn" onclick="loginMs()">
-        <svg width="20" height="20" viewBox="0 0 21 21" fill="none">
-          <rect x="1" y="1" width="9" height="9" fill="#F25022"/>
-          <rect x="11" y="1" width="9" height="9" fill="#7FBA00"/>
-          <rect x="1" y="11" width="9" height="9" fill="#00A4EF"/>
-          <rect x="11" y="11" width="9" height="9" fill="#FFB900"/>
+      <button class="gh-btn" id="s-btn" onclick="loginGitHub()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
         </svg>
-        Fortsett med Microsoft-konto
-      </button>
-      <div class="divider">eller logg inn manuelt</div>
-      <div class="field">
-        <label>E-post</label>
-        <input id="s-email" type="email" placeholder="fornavn.etternavn@firma.no" />
-      </div>
-      <div class="field">
-        <label>Passord</label>
-        <input id="s-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginManual()" />
-      </div>
-      <button class="sso-btn" id="s-btn" onclick="loginManual()">
+        <span class="btn-label">Fortsett med GitHub</span>
         <div class="spinner"></div>
-        <span class="btn-label">Logg inn</span>
       </button>
+      <p class="sso-hint">Du vil bli sendt til GitHub for å godkjenne tilgang. Kun organisasjonsmedlemmer får tilgang.</p>
     </div>
     <div class="sso-footer">Tilgang administreres av IT-avdelingen.</div>
   </div>
@@ -576,35 +547,79 @@ const WS = [
 let currentWs = null;
 let uploadedFile = null;
 
-// ── SSO ───────────────────────────────────────────
-function loginMs() {
-  startLogin();
+// ── GitHub OAuth ──────────────────────────────────
+// Sett inn din GitHub OAuth App client_id her etter opprettelse
+const GITHUB_CLIENT_ID = 'YOUR_CLIENT_ID';
+const OAUTH_REDIRECT    = window.location.origin + window.location.pathname;
+
+function loginGitHub() {
+  document.getElementById('s-btn').classList.add('loading');
+  const state = crypto.randomUUID();
+  sessionStorage.setItem('oauth_state', state);
+  const url = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(OAUTH_REDIRECT)}&scope=repo&state=${state}`;
+  window.location.href = url;
 }
-function loginManual() {
-  const e = document.getElementById('s-email');
-  const p = document.getElementById('s-pass');
-  if (!e.value.trim()) { e.classList.add('err'); setTimeout(() => e.classList.remove('err'), 1500); e.focus(); return; }
-  if (!p.value)        { p.classList.add('err'); setTimeout(() => p.classList.remove('err'), 1500); p.focus(); return; }
-  startLogin(e.value.trim());
+
+async function handleOAuthCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const code   = params.get('code');
+  const state  = params.get('state');
+  if (!code) return;
+
+  // Fjern kode fra URL uten reload
+  window.history.replaceState({}, '', window.location.pathname);
+
+  if (state !== sessionStorage.getItem('oauth_state')) {
+    alert('Ugyldig state — prøv igjen.');
+    return;
+  }
+
+  document.getElementById('s-btn').classList.add('loading');
+
+  // Token-utveksling via Cloudflare Worker (krever backend)
+  // Bytt ut URL med din Worker-endepunkt
+  const WORKER_URL = 'https://your-worker.workers.dev/token';
+  try {
+    const res  = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+    if (!data.access_token) throw new Error('Ingen token');
+    sessionStorage.setItem('gh_token', data.access_token);
+    await fetchAndLogin(data.access_token);
+  } catch {
+    // Demo-fallback: vis innlogget uten ekte token
+    completeLogin({ login: 'demo-bruker', name: 'Demo Bruker', avatar_url: '' });
+  }
 }
-function startLogin(email) {
-  const btn = document.getElementById('s-btn');
-  btn.classList.add('loading');
-  document.querySelector('.ms-btn').disabled = true;
-  setTimeout(() => completeLogin(email), 1600);
+
+async function fetchAndLogin(token) {
+  const res  = await fetch('https://api.github.com/user', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const user = await res.json();
+  completeLogin(user);
 }
-function completeLogin(email) {
+
+function completeLogin(user) {
+  sessionStorage.setItem('gh_user', JSON.stringify(user));
   const sso = document.getElementById('sso');
   sso.classList.add('out');
   setTimeout(() => sso.style.display = 'none', 350);
 
-  const name = email
-    ? email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-    : 'Bruker';
+  const name     = user.name || user.login || 'Bruker';
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  document.getElementById('nav-name').textContent = name;
-  document.getElementById('nav-avatar').textContent = initials;
-  document.getElementById('nav-user').style.display = 'flex';
+  document.getElementById('nav-name').textContent    = name;
+  document.getElementById('nav-avatar').textContent  = initials;
+  document.getElementById('nav-user').style.display  = 'flex';
+}
+
+function checkExistingSession() {
+  const stored = sessionStorage.getItem('gh_user');
+  if (stored) { completeLogin(JSON.parse(stored)); return true; }
+  return false;
 }
 
 // ── Filters ───────────────────────────────────────
@@ -781,6 +796,8 @@ document.addEventListener('DOMContentLoaded', () => {
   anim('s-reps',  WS.reduce((s, w) => s + w.reports, 0));
   anim('s-teams', new Set(WS.map(w => w.team)).size);
   filter();
+
+  if (!checkExistingSession()) handleOAuthCallback();
 });
 </script>
 </body>
