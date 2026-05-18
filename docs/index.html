@@ -270,6 +270,53 @@
     .analyze-btn:hover { background: #383f47; }
     .analyze-btn:disabled { opacity: .5; pointer-events: none; }
 
+    /* ── ARCHITECTURE PAGE ── */
+    .arch-page { padding-top: 2.5rem; padding-bottom: 3rem; }
+    .arch-intro { margin-bottom: 2rem; }
+    .arch-intro h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: .5rem; }
+    .arch-intro p  { font-size: .9rem; color: var(--muted); max-width: 560px; line-height: 1.65; }
+    .arch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; }
+    .arch-card {
+      background: #fff; border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 1.375rem;
+      display: flex; flex-direction: column; gap: .875rem;
+    }
+    .arch-card h3 { font-size: .95rem; font-weight: 700; }
+    .arch-card p  { font-size: .83rem; color: var(--muted); line-height: 1.6; }
+    .arch-card-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .arch-card-icon.blue   { background: var(--blue-lt); color: var(--blue); }
+    .arch-card-icon.orange { background: #FEF3C7; color: var(--orange); }
+    .arch-card-icon.green  { background: #DCFCE7; color: var(--green); }
+    .arch-items { display: flex; flex-direction: column; gap: .4rem; margin-top: .25rem; }
+    .arch-item  { display: flex; align-items: flex-start; gap: .6rem; font-size: .8rem; color: var(--muted); line-height: 1.45; }
+    .arch-dot   { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: .35rem; }
+    .arch-dot.blue   { background: var(--blue); }
+    .arch-dot.green  { background: var(--green); }
+    .arch-dot.orange { background: var(--orange); }
+    .arch-flow { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin-top: .25rem; }
+    .flow-step  { padding: .25rem .6rem; border-radius: 4px; font-size: .75rem; font-weight: 600; background: var(--bg); border: 1px solid var(--border); color: var(--muted); }
+    .flow-step.green { background: #DCFCE7; border-color: var(--green); color: var(--green); }
+    .flow-arrow { font-size: .75rem; color: var(--border); }
+
+    /* Semantic model panel */
+    .model-panel { display: flex; flex-direction: column; gap: 1rem; }
+    .model-option {
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 1rem; display: flex; gap: .875rem; align-items: flex-start;
+      transition: border-color .15s;
+    }
+    .model-option:hover { border-color: var(--blue); }
+    .model-opt-icon { width: 36px; height: 36px; border-radius: 7px; background: var(--blue-lt); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--blue); }
+    .model-opt-body { flex: 1; }
+    .model-opt-title { font-size: .875rem; font-weight: 700; margin-bottom: .2rem; }
+    .model-opt-desc  { font-size: .78rem; color: var(--muted); line-height: 1.5; }
+    .model-opt-btn   { margin-top: .625rem; padding: .35rem .75rem; border-radius: 5px; font-size: .78rem; font-weight: 600; border: 1.5px solid var(--border); background: #fff; cursor: pointer; color: var(--text); transition: all .12s; }
+    .model-opt-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
+    .model-notice { background: #FEF3C7; border: 1.5px solid #FDE68A; border-radius: var(--radius); padding: .875rem 1rem; font-size: .82rem; color: #92400E; line-height: 1.55; }
+
     /* ── TOAST ── */
     .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--text); color: #fff; padding: .65rem 1rem; border-radius: 6px; font-size: .82rem; opacity: 0; transform: translateY(6px); transition: all .25s; pointer-events: none; z-index: 400; }
     .toast.show { opacity: 1; transform: translateY(0); }
@@ -331,7 +378,8 @@
     Fabric Catalog
   </a>
   <div class="nav-links">
-    <a href="#top" class="nav-link">Oversikt</a>
+    <a class="nav-link active" id="nav-oversikt" onclick="showPage('oversikt')" href="#">Oversikt</a>
+    <a class="nav-link" id="nav-arkitektur" onclick="showPage('arkitektur')" href="#">Arkitektur</a>
     <div class="nav-user" id="nav-user">
       <div class="avatar" id="nav-avatar">?</div>
       <span id="nav-name">Bruker</span>
@@ -351,18 +399,119 @@
   </div>
 </div>
 
-<div class="page">
-  <div class="filters">
-    <div class="search-wrap">
-      <svg class="search-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" id="q" placeholder="Søk rapport eller team..." oninput="doFilter()" />
+<!-- OVERSIKT -->
+<div id="page-oversikt">
+  <div class="page">
+    <div class="filters">
+      <div class="search-wrap">
+        <svg class="search-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="q" placeholder="Søk rapport eller team..." oninput="doFilter()" />
+      </div>
+    </div>
+    <div class="section-bar">
+      <span class="section-lbl">Workspaces</span>
+      <span class="result-ct" id="ct"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<!-- ARKITEKTUR -->
+<div id="page-arkitektur" style="display:none;">
+  <div class="page arch-page">
+
+    <div class="arch-intro">
+      <h2>Slik fungerer det</h2>
+      <p>Her er en oversikt over hvordan workspaces, rapporter og semantiske modeller henger sammen — og hva som skjer bak kulissene når du gjør en endring.</p>
+    </div>
+
+    <div class="arch-grid">
+
+      <div class="arch-card">
+        <div class="arch-card-icon blue">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <h3>Hvert workspace er ett område</h3>
+        <p>Salg, Finans, Verksted osv. er egne workspaces i Fabric. Alle rapporter og modeller for et område ligger samlet der.</p>
+        <div class="arch-items">
+          <div class="arch-item"><span class="arch-dot blue"></span>Rapporter (.pbix)</div>
+          <div class="arch-item"><span class="arch-dot blue"></span>Semantiske modeller (TMDL)</div>
+          <div class="arch-item"><span class="arch-dot blue"></span>Dataflows og notebooks</div>
+        </div>
+      </div>
+
+      <div class="arch-card">
+        <div class="arch-card-icon blue">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <h3>To versjoner alltid</h3>
+        <p>Hvert workspace finnes i to varianter automatisk. Du jobber alltid i arbeidsmiljøet — aldri direkte i det som er live.</p>
+        <div class="arch-items">
+          <div class="arch-item"><span class="arch-dot green"></span><strong>Produksjon</strong> — det brukerne ser</div>
+          <div class="arch-item"><span class="arch-dot blue"></span><strong>Arbeidsmiljø</strong> — her tester du</div>
+        </div>
+      </div>
+
+      <div class="arch-card">
+        <div class="arch-card-icon blue">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <h3>Rapporter — redigeres i Desktop</h3>
+        <p>Power BI-rapporter lastes ned som .pbix, redigeres i Power BI Desktop, og lastes opp igjen her. Endringen kjøres gjennom automatisk gjennomgang før den publiseres.</p>
+        <div class="arch-flow">
+          <span class="flow-step">Last ned</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Rediger i Desktop</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Last opp</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Gjennomgang</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step green">Publisert</span>
+        </div>
+      </div>
+
+      <div class="arch-card">
+        <div class="arch-card-icon orange">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <h3>Semantiske modeller — redigeres via kobling</h3>
+        <p>Semantiske modeller inneholder datadefinisjonene som rapportene bygger på. De kan <em>ikke</em> lastes ned som en fil — i stedet kobler du deg direkte til modellen via Tabular Editor eller Power BI Desktop.</p>
+        <div class="arch-items">
+          <div class="arch-item"><span class="arch-dot orange"></span>Tabular Editor — full redigering av DAX og relasjoner</div>
+          <div class="arch-item"><span class="arch-dot orange"></span>Power BI Desktop — live-kobling via XMLA</div>
+          <div class="arch-item"><span class="arch-dot orange"></span>Endringer lagres direkte i arbeidsmiljøet</div>
+        </div>
+      </div>
+
+      <div class="arch-card">
+        <div class="arch-card-icon blue">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        </div>
+        <h3>Automatisk gjennomgang</h3>
+        <p>Når du laster opp en endring sjekkes den automatisk for vanlige feil og beste praksis — DAX-mønstre, skjulte kolonner, manglende beskrivelser og mer. Du velger selv om du vil rette opp eller sende inn uansett.</p>
+        <div class="arch-items">
+          <div class="arch-item"><span class="arch-dot orange"></span>Advarsler — bør fikses</div>
+          <div class="arch-item"><span class="arch-dot blue"></span>Informasjon — greit å vite</div>
+          <div class="arch-item"><span class="arch-dot green"></span>OK — ser bra ut</div>
+        </div>
+      </div>
+
+      <div class="arch-card">
+        <div class="arch-card-icon green">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+        </div>
+        <h3>Nytt workspace</h3>
+        <p>Trenger teamet ditt et nytt område? Kontakt IT-avdelingen — de setter opp workspace, kobling og tilganger. Deretter dukker det opp i katalogen automatisk.</p>
+        <div class="arch-items">
+          <div class="arch-item"><span class="arch-dot green"></span>IT setter opp workspace i Fabric</div>
+          <div class="arch-item"><span class="arch-dot green"></span>Kobles til GitHub automatisk</div>
+          <div class="arch-item"><span class="arch-dot green"></span>Vises i katalogen innen 24 timer</div>
+        </div>
+      </div>
+
     </div>
   </div>
-  <div class="section-bar">
-    <span class="section-lbl">Workspaces</span>
-    <span class="result-ct" id="ct"></span>
-  </div>
-  <div class="grid" id="grid"></div>
 </div>
 
 <footer>Fabric Workspace Catalog &nbsp;·&nbsp; Driftes på GitHub Pages</footer>
@@ -419,6 +568,50 @@
           <span class="d-count" id="feat-count"></span>
         </div>
         <div style="display:flex;flex-direction:column;gap:.75rem;" id="feat-list"></div>
+      </div>
+    </div>
+
+    <!-- PANEL: Semantisk modell -->
+    <div class="d-panel" id="panel-modell">
+      <div class="model-panel">
+        <button class="work-back" onclick="backToInnhold()">← Tilbake til innhold</button>
+
+        <div class="model-notice">
+          Semantiske modeller kan ikke lastes ned som en fil. De redigeres ved å koble seg direkte til arbeidsmiljøet via ett av verktøyene under.
+        </div>
+
+        <div class="model-option">
+          <div class="model-opt-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <div class="model-opt-body">
+            <div class="model-opt-title">Tabular Editor</div>
+            <div class="model-opt-desc">Anbefalt for DAX-utvikling, relasjoner og modellstruktur. Kobler seg til arbeidsmiljøet via XMLA-endepunkt og gir full kontroll over modellen.</div>
+            <button class="model-opt-btn" onclick="showToast('XMLA-endepunkt kopiert')">Kopier tilkoblingstreng</button>
+          </div>
+        </div>
+
+        <div class="model-option">
+          <div class="model-opt-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <div class="model-opt-body">
+            <div class="model-opt-title">Power BI Desktop — live-kobling</div>
+            <div class="model-opt-desc">Åpne Desktop og koble til arbeidsmiljøet via «Hent data → Power BI-datasett». Du kan da bygge rapporter på toppen av modellen uten å laste ned noe.</div>
+            <button class="model-opt-btn" onclick="showToast('Workspace-URL kopiert')">Kopier workspace-URL</button>
+          </div>
+        </div>
+
+        <div class="model-option">
+          <div class="model-opt-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </div>
+          <div class="model-opt-body">
+            <div class="model-opt-title">Åpne i Fabric</div>
+            <div class="model-opt-desc">Gjør enkle endringer direkte i nettleseren via Fabric-portalen. Passer for små justeringer uten behov for lokalt verktøy.</div>
+            <button class="model-opt-btn" onclick="showToast('Åpner Fabric...')">Åpne i Fabric</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -613,6 +806,14 @@ function completeLogin(username) {
   document.getElementById('nav-user').style.display = 'flex';
 }
 
+// ── Page switching ────────────────────────────────
+function showPage(page) {
+  document.getElementById('page-oversikt').style.display   = page === 'oversikt'   ? 'block' : 'none';
+  document.getElementById('page-arkitektur').style.display = page === 'arkitektur' ? 'block' : 'none';
+  document.getElementById('nav-oversikt').classList.toggle('active',   page === 'oversikt');
+  document.getElementById('nav-arkitektur').classList.toggle('active', page === 'arkitektur');
+}
+
 // ── Filter ────────────────────────────────────────
 function doFilter() {
   const q = document.getElementById('q').value.toLowerCase();
@@ -748,18 +949,30 @@ function renderEndringer() {
 
 // ── Rediger panel ─────────────────────────────────
 function openRediger(idx, type) {
-  const item = type === 'rapport' ? currentWs.rapporter[idx] : currentWs.modeller[idx];
-  document.getElementById('dl-btn').textContent = `Last ned ${item.file}`;
-  document.getElementById('dl-btn').disabled = false;
-  document.getElementById('dl-btn').style.background = '';
+  document.querySelectorAll('.d-panel').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.d-tab').forEach(el => el.classList.remove('active'));
+
+  if (type === 'modell') {
+    const item = currentWs.modeller[idx];
+    document.getElementById('panel-modell').classList.add('active');
+    return;
+  }
+
+  const item = currentWs.rapporter[idx];
+  const dlBtn = document.getElementById('dl-btn');
+  dlBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Last ned ${item.file}`;
+  dlBtn.disabled = false;
+  dlBtn.style.background = '';
 
   resetUpload();
   setStep(1);
   document.getElementById('change-desc').value = '';
-  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('analyze-btn').disabled = true;
+  document.getElementById('review-describe').style.display = 'block';
+  document.getElementById('review-result').style.display   = 'none';
+  document.getElementById('review-done').style.display     = 'none';
+  document.getElementById('analyze-btn').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Kjør gjennomgang`;
 
-  document.querySelectorAll('.d-panel').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.d-tab').forEach(el => el.classList.remove('active'));
   document.getElementById('panel-rediger').classList.add('active');
 }
 function backToInnhold() {
