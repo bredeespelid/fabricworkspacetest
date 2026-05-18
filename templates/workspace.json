@@ -1,0 +1,19 @@
+{
+  "id": "ws-NAVN",
+  "name": "Workspace Navn",
+  "team": "Team-navn",
+  "env": "prod",
+  "icon": "📊",
+  "description": "Kort beskrivelse av workspace og datakilder.",
+  "tags": ["tag1", "tag2"],
+  "owner": "github-team-navn",
+  "reports": 0,
+  "fabricWorkspaceId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "fabricUrl": "https://app.powerbi.com/groups/WORKSPACE_ID",
+  "githubRepo": "https://github.com/ORG/REPO_NAME",
+  "pbixFile": "rapport.pbix",
+  "semanticModel": "model.bim",
+  "sensitivity": "Internal",
+  "dataRefresh": "daily",
+  "sources": ["Kilde1", "Kilde2"]
+}

@@ -1,0 +1,16 @@
+# Liste over registrerte workspace-repos
+# Format: repo-navn (uten org-prefix)
+# Katalogen henter workspace.json fra main-branch i hvert repo
+
+ws-salg
+ws-finans
+ws-hr
+ws-supply
+ws-marketing
+ws-operations
+ws-customer
+ws-data-platform
+ws-ecom
+ws-risk
+ws-production
+# ws-NYE-WORKSPACE    ← kommenter inn for å aktivere

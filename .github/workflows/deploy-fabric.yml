@@ -1,0 +1,96 @@
+name: Deploy to Fabric
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate workspace.json
+        run: python3 -c "
+          import json, sys
+          with open('workspace.json') as f:
+              d = json.load(f)
+          required = ['id','name','team','env','fabricWorkspaceId']
+          missing = [k for k in required if k not in d]
+          if missing:
+              print('Mangler felt:', missing); sys.exit(1)
+          print('workspace.json OK')
+        "
+
+      - name: Validate PBIX exists
+        run: |
+          PBIX=$(python3 -c "import json; print(json.load(open('workspace.json'))['pbixFile'])")
+          test -f "$PBIX" || (echo "Finner ikke $PBIX" && exit 1)
+
+  deploy-to-fabric:
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set environment
+        id: env
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "ENV=prod" >> $GITHUB_OUTPUT
+          else
+            echo "ENV=dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get Fabric workspace ID
+        id: workspace
+        run: |
+          ENV=${{ steps.env.outputs.ENV }}
+          if [ "$ENV" = "prod" ]; then
+            WS_ID=$(python3 -c "import json; print(json.load(open('workspace.json'))['fabricWorkspaceId'])")
+          else
+            WS_ID=$(python3 -c "import json; print(json.load(open('workspace.json')).get('fabricWorkspaceIdDev', ''))")
+          fi
+          echo "WORKSPACE_ID=$WS_ID" >> $GITHUB_OUTPUT
+
+      - name: Deploy via Fabric REST API
+        env:
+          FABRIC_TOKEN: ${{ secrets.FABRIC_SERVICE_PRINCIPAL_TOKEN }}
+          CLIENT_ID: ${{ secrets.FABRIC_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.FABRIC_CLIENT_SECRET }}
+          TENANT_ID: ${{ secrets.FABRIC_TENANT_ID }}
+          WORKSPACE_ID: ${{ steps.workspace.outputs.WORKSPACE_ID }}
+        run: |
+          # Hent access token
+          TOKEN=$(curl -s -X POST \
+            "https://login.microsoftonline.com/$TENANT_ID/oauth2/v2.0/token" \
+            -d "grant_type=client_credentials&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&scope=https://analysis.windows.net/powerbi/api/.default" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+
+          # Last opp PBIX
+          PBIX_FILE=$(python3 -c "import json; print(json.load(open('workspace.json'))['pbixFile'])")
+          REPORT_NAME=$(basename "$PBIX_FILE" .pbix)
+
+          curl -s -X POST \
+            "https://api.powerbi.com/v1.0/myorg/groups/$WORKSPACE_ID/imports?datasetDisplayName=$REPORT_NAME&nameConflict=CreateOrOverwrite" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: multipart/form-data" \
+            -F "file=@$PBIX_FILE"
+
+          echo "Deploy til Fabric fullført (${{ steps.env.outputs.ENV }})"
+
+      - name: Notify catalog
+        if: github.ref_name == 'main'
+        env:
+          CATALOG_TOKEN: ${{ secrets.CATALOG_TOKEN }}
+          CATALOG_REPO: ${{ vars.CATALOG_REPO }}
+        run: |
+          curl -s -X POST \
+            "https://api.github.com/repos/$CATALOG_REPO/dispatches" \
+            -H "Authorization: Bearer $CATALOG_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -d '{"event_type":"workspace-updated","client_payload":{"repo":"${{ github.repository }}"}}'
