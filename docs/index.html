@@ -6,17 +6,18 @@
   <title>Fabric Catalog</title>
   <style>
     :root {
-      --blue:      #0032FF;
-      --blue-dk:   #0025CC;
-      --blue-lt:   #EEF1FF;
-      --bg:        #F5F6FA;
-      --card:      #FFFFFF;
-      --text:      #0D0D0D;
-      --muted:     #5A6072;
-      --border:    #DDE1ED;
-      --prod:      #0A7A3E;
-      --radius:    8px;
-      --shadow:    0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
+      --blue:    #0032FF;
+      --blue-dk: #0025CC;
+      --blue-lt: #EEF1FF;
+      --bg:      #F5F6FA;
+      --card:    #FFFFFF;
+      --text:    #0D0D0D;
+      --muted:   #5A6072;
+      --border:  #DDE1ED;
+      --green:   #0A7A3E;
+      --orange:  #B45309;
+      --radius:  8px;
+      --shadow:  0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 15px; }
@@ -29,44 +30,18 @@
       transition: opacity .35s;
     }
     #sso.out { opacity: 0; pointer-events: none; }
-
     .sso-card {
-      background: #fff;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      box-shadow: 0 4px 24px rgba(0,0,0,.09);
-      width: 100%; max-width: 400px; margin: 1rem;
-      overflow: hidden;
+      background: #fff; border: 1.5px solid var(--border);
+      border-radius: 10px; box-shadow: 0 4px 24px rgba(0,0,0,.09);
+      width: 100%; max-width: 380px; margin: 1rem; overflow: hidden;
     }
-    .sso-top {
-      background: var(--blue); padding: 2rem;
-      text-align: center; color: #fff;
-    }
-    .sso-brand {
-      display: inline-flex; align-items: center; gap: .5rem;
-      font-weight: 700; font-size: 1rem; margin-bottom: 1.25rem;
-    }
-    .sso-mark {
-      width: 28px; height: 28px;
-      background: rgba(255,255,255,.2); border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .sso-top h1  { font-size: 1.1rem; font-weight: 600; margin-bottom: .25rem; }
-    .sso-top p   { font-size: .82rem; opacity: .7; }
-    .sso-body    { padding: 1.75rem 2rem; }
-    .sso-footer  { padding: 1rem 2rem; border-top: 1px solid var(--border); text-align: center; font-size: .75rem; color: var(--muted); }
-
-    .field { margin-bottom: .875rem; }
-    .field label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); margin-bottom: .35rem; text-transform: uppercase; letter-spacing: .05em; }
-    .field input {
-      width: 100%; padding: .55rem .75rem;
-      border: 1.5px solid var(--border); border-radius: 6px;
-      font-size: .875rem; outline: none;
-      transition: border-color .15s, box-shadow .15s;
-    }
-    .field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,50,255,.1); }
-    .field input.err   { border-color: #e53e3e; }
-
+    .sso-top { background: var(--blue); padding: 2rem; text-align: center; color: #fff; }
+    .sso-brand { display: inline-flex; align-items: center; gap: .5rem; font-weight: 700; font-size: 1rem; margin-bottom: 1.25rem; }
+    .sso-mark { width: 28px; height: 28px; background: rgba(255,255,255,.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .sso-top h1 { font-size: 1.1rem; font-weight: 600; margin-bottom: .25rem; }
+    .sso-top p  { font-size: .82rem; opacity: .7; }
+    .sso-body   { padding: 1.75rem 2rem; }
+    .sso-footer { padding: 1rem 2rem; border-top: 1px solid var(--border); text-align: center; font-size: .75rem; color: var(--muted); }
     .gh-btn {
       width: 100%; padding: .75rem 1rem;
       background: #24292f; color: #fff;
@@ -75,17 +50,13 @@
       display: flex; align-items: center; justify-content: center; gap: .65rem;
       transition: background .15s; margin-bottom: 1rem;
     }
-    .gh-btn:hover   { background: #383f47; }
+    .gh-btn:hover { background: #383f47; }
     .gh-btn.loading { pointer-events: none; opacity: .75; }
-    .spinner {
-      width: 14px; height: 14px;
-      border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
-      border-radius: 50%; animation: spin .7s linear infinite; display: none;
-    }
+    .sso-hint { font-size: .78rem; color: var(--muted); text-align: center; line-height: 1.5; }
+    .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; display: none; }
     .gh-btn.loading .spinner   { display: block; }
     .gh-btn.loading .btn-label { display: none; }
     .gh-btn.loading svg        { display: none; }
-    .sso-hint { font-size: .78rem; color: var(--muted); text-align: center; line-height: 1.5; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── NAV ── */
@@ -95,39 +66,16 @@
       padding: 0 2rem; gap: 1.5rem;
       position: sticky; top: 0; z-index: 100;
     }
-    .nav-logo {
-      display: flex; align-items: center; gap: .5rem;
-      font-weight: 700; font-size: .975rem; color: var(--blue);
-      text-decoration: none;
-    }
-    .nav-mark {
-      width: 28px; height: 28px; background: var(--blue); border-radius: 5px;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .nav-logo { display: flex; align-items: center; gap: .5rem; font-weight: 700; font-size: .975rem; color: var(--blue); text-decoration: none; }
+    .nav-mark  { width: 28px; height: 28px; background: var(--blue); border-radius: 5px; display: flex; align-items: center; justify-content: center; }
     .nav-links { margin-left: auto; display: flex; gap: .125rem; align-items: center; }
-    .nav-link {
-      padding: .35rem .75rem; border-radius: 5px;
-      font-size: .85rem; font-weight: 500; color: var(--muted);
-      text-decoration: none; transition: background .12s, color .12s;
-    }
+    .nav-link  { padding: .35rem .75rem; border-radius: 5px; font-size: .85rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: background .12s, color .12s; }
     .nav-link:hover { background: var(--blue-lt); color: var(--blue); }
-    .nav-user {
-      display: none; align-items: center; gap: .5rem;
-      font-size: .85rem; font-weight: 500; color: var(--text);
-      margin-left: .5rem; padding-left: .75rem;
-      border-left: 1px solid var(--border);
-    }
-    .avatar {
-      width: 28px; height: 28px; background: var(--blue); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: .7rem; font-weight: 700; color: #fff; flex-shrink: 0;
-    }
+    .nav-user  { display: none; align-items: center; gap: .5rem; font-size: .85rem; font-weight: 500; color: var(--text); margin-left: .5rem; padding-left: .75rem; border-left: 1px solid var(--border); }
+    .avatar    { width: 28px; height: 28px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; color: #fff; flex-shrink: 0; }
 
     /* ── HEADER ── */
-    .header {
-      background: var(--blue); color: #fff;
-      padding: 3rem 2rem 2.5rem;
-    }
+    .header { background: var(--blue); color: #fff; padding: 3rem 2rem 2.5rem; }
     .header-inner { max-width: 1200px; margin: 0 auto; }
     .header h1 { font-size: 1.9rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: .5rem; }
     .header p  { font-size: .9rem; opacity: .75; max-width: 460px; line-height: 1.6; margin-bottom: 2rem; }
@@ -139,9 +87,9 @@
     .page { max-width: 1200px; margin: 0 auto; padding: 2rem; }
 
     /* ── FILTERS ── */
-    .filters { display: flex; gap: .625rem; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; }
+    .filters { display: flex; gap: .625rem; margin-bottom: 1.25rem; }
     .search-wrap { position: relative; flex: 1; min-width: 200px; }
-    .search-ico { position: absolute; left: .75rem; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+    .search-ico  { position: absolute; left: .75rem; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
     .search-wrap input {
       width: 100%; padding: .5rem .75rem .5rem 2.25rem;
       border: 1.5px solid var(--border); border-radius: var(--radius);
@@ -149,16 +97,6 @@
       transition: border-color .15s, box-shadow .15s;
     }
     .search-wrap input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,50,255,.1); }
-
-    .pill {
-      padding: .4rem .9rem; border-radius: 20px;
-      border: 1.5px solid var(--border); background: #fff;
-      font-size: .8rem; font-weight: 500; color: var(--muted);
-      cursor: pointer; transition: all .12s;
-      display: flex; align-items: center; gap: .4rem;
-    }
-    .pill:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
-    .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
     /* ── GRID ── */
     .section-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
@@ -177,29 +115,20 @@
     .card-head  { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
     .card-title { font-size: .975rem; font-weight: 700; line-height: 1.35; }
     .card-team  { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
-    .card-desc { font-size: .83rem; color: var(--muted); line-height: 1.55; }
+    .card-desc  { font-size: .83rem; color: var(--muted); line-height: 1.55; }
     .tags { display: flex; flex-wrap: wrap; gap: .35rem; }
     .tag  { padding: .15rem .5rem; border-radius: 4px; background: var(--bg); border: 1px solid var(--border); font-size: .73rem; color: var(--muted); }
-    .card-foot { border-top: 1px solid var(--border); padding-top: .875rem; margin-top: auto; }
-    .card-meta { display: flex; gap: 1rem; font-size: .75rem; color: var(--muted); margin-bottom: .75rem; flex-wrap: wrap; }
-    .card-open {
-      width: 100%; padding: .5rem;
-      background: var(--blue); color: #fff;
-      border: none; border-radius: 6px;
-      font-size: .85rem; font-weight: 600; cursor: pointer;
-      transition: background .12s;
-    }
+    .card-foot  { border-top: 1px solid var(--border); padding-top: .875rem; margin-top: auto; }
+    .card-meta  { display: flex; gap: 1rem; font-size: .75rem; color: var(--muted); margin-bottom: .75rem; flex-wrap: wrap; }
+    .card-open  { width: 100%; padding: .5rem; background: var(--blue); color: #fff; border: none; border-radius: 6px; font-size: .85rem; font-weight: 600; cursor: pointer; transition: background .12s; }
     .card-open:hover { background: var(--blue-dk); }
 
     /* ── DRAWER ── */
-    .drawer-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,.35); z-index: 200;
-    }
-    .drawer-overlay.open { display: block; }
+    .d-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 200; }
+    .d-overlay.open { display: block; }
     .drawer {
       position: fixed; top: 0; right: 0; bottom: 0;
-      width: 480px; max-width: 100vw;
+      width: 560px; max-width: 100vw;
       background: #fff; z-index: 201;
       box-shadow: -4px 0 32px rgba(0,0,0,.12);
       display: flex; flex-direction: column;
@@ -207,52 +136,85 @@
     }
     .drawer.open { transform: translateX(0); }
 
-    .drawer-head {
+    .d-head {
       padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
-      display: flex; align-items: flex-start; gap: 1rem;
+      display: flex; align-items: flex-start; gap: 1rem; flex-shrink: 0;
     }
-    .drawer-title { font-size: 1.05rem; font-weight: 700; flex: 1; }
-    .drawer-sub   { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
-    .drawer-close {
-      background: var(--bg); border: none; border-radius: 5px;
-      width: 30px; height: 30px; cursor: pointer; color: var(--muted);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      font-size: .95rem;
-    }
-    .drawer-close:hover { background: var(--border); }
+    .d-title { font-size: 1.1rem; font-weight: 700; flex: 1; }
+    .d-sub   { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
+    .d-close { background: var(--bg); border: none; border-radius: 5px; width: 30px; height: 30px; cursor: pointer; color: var(--muted); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .d-close:hover { background: var(--border); }
 
-    .drawer-body { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+    /* Tabs */
+    .d-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; padding: 0 1.5rem; }
+    .d-tab  { padding: .75rem 1rem; font-size: .85rem; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; white-space: nowrap; }
+    .d-tab:hover  { color: var(--text); }
+    .d-tab.active { color: var(--blue); border-color: var(--blue); }
 
-    /* Steps */
-    .step {
-      border: 1.5px solid var(--border); border-radius: var(--radius);
-      overflow: hidden;
-    }
-    .step.done   { border-color: var(--prod); }
-    .step.active { border-color: var(--blue); }
+    .d-body { flex: 1; overflow-y: auto; }
+    .d-panel { display: none; padding: 1.5rem; flex-direction: column; gap: 1.5rem; }
+    .d-panel.active { display: flex; }
 
-    .step-head {
-      padding: .875rem 1rem;
+    /* Section header inside drawer */
+    .d-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .75rem; }
+    .d-section-lbl  { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+    .d-count        { font-size: .72rem; color: var(--muted); }
+
+    /* Item row */
+    .item-row {
       display: flex; align-items: center; gap: .75rem;
-      background: #fff; cursor: default;
+      padding: .75rem; border-radius: var(--radius);
+      border: 1.5px solid var(--border); background: #fff;
+      transition: border-color .15s;
     }
-    .step-num {
-      width: 26px; height: 26px; border-radius: 50%;
-      background: var(--bg); border: 1.5px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: .75rem; font-weight: 700; color: var(--muted); flex-shrink: 0;
+    .item-row:hover { border-color: var(--blue); }
+    .item-icon { width: 34px; height: 34px; border-radius: 7px; background: var(--blue-lt); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .item-info { flex: 1; min-width: 0; }
+    .item-name { font-size: .875rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-meta { font-size: .75rem; color: var(--muted); margin-top: .1rem; }
+    .item-btn  { padding: .35rem .75rem; border-radius: 5px; font-size: .78rem; font-weight: 600; border: 1.5px solid var(--border); background: #fff; cursor: pointer; color: var(--text); white-space: nowrap; transition: all .12s; flex-shrink: 0; }
+    .item-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
+    .item-btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .item-btn.primary:hover { background: var(--blue-dk); }
+
+    /* Feature cards */
+    .feature-card {
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 1rem; background: #fff;
     }
+    .feature-top  { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; margin-bottom: .5rem; }
+    .feature-name { font-size: .875rem; font-weight: 600; line-height: 1.35; }
+    .feature-meta { font-size: .75rem; color: var(--muted); display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: .75rem; }
+    .feature-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+
+    .status {
+      padding: .2rem .6rem; border-radius: 4px;
+      font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; flex-shrink: 0;
+    }
+    .s-work    { background: #EEF1FF; color: var(--blue); }
+    .s-review  { background: #FEF3C7; color: var(--orange); }
+    .s-done    { background: #DCFCE7; color: var(--green); }
+
+    /* Work panel (shown when opening a specific report) */
+    .work-panel { display: flex; flex-direction: column; gap: 1rem; }
+    .work-back  { display: flex; align-items: center; gap: .4rem; font-size: .8rem; font-weight: 600; color: var(--blue); cursor: pointer; margin-bottom: .25rem; background: none; border: none; padding: 0; }
+    .work-back:hover { opacity: .75; }
+
+    .step {
+      border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden;
+    }
+    .step.done   { border-color: var(--green); }
+    .step.active { border-color: var(--blue); }
+    .step-head   { padding: .875rem 1rem; display: flex; align-items: center; gap: .75rem; background: #fff; }
+    .step-num    { width: 24px; height: 24px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; color: var(--muted); flex-shrink: 0; }
     .step.active .step-num { background: var(--blue); border-color: var(--blue); color: #fff; }
-    .step.done   .step-num { background: var(--prod); border-color: var(--prod); color: #fff; }
-    .step-name  { font-size: .875rem; font-weight: 600; flex: 1; }
-    .step-check { color: var(--prod); font-size: .9rem; display: none; }
+    .step.done   .step-num { background: var(--green); border-color: var(--green); color: #fff; }
+    .step-name   { font-size: .875rem; font-weight: 600; flex: 1; }
+    .step-check  { color: var(--green); display: none; }
     .step.done .step-check { display: block; }
+    .step-body   { padding: 0 1rem 1rem; }
+    .step-desc   { font-size: .82rem; color: var(--muted); line-height: 1.55; margin-bottom: .875rem; }
 
-    .step-body { padding: 0 1rem 1rem; }
-
-    .step-desc { font-size: .82rem; color: var(--muted); line-height: 1.55; margin-bottom: 1rem; }
-
-    /* Download button */
     .dl-btn {
       width: 100%; padding: .6rem 1rem;
       background: var(--blue); color: #fff;
@@ -261,66 +223,40 @@
       display: flex; align-items: center; justify-content: center; gap: .5rem;
       transition: background .12s;
     }
-    .dl-btn:hover { background: var(--blue-dk); }
+    .dl-btn:hover    { background: var(--blue-dk); }
     .dl-btn:disabled { opacity: .5; pointer-events: none; }
 
-    /* Upload drop zone */
     .dropzone {
       border: 2px dashed var(--border); border-radius: var(--radius);
-      padding: 1.5rem; text-align: center;
-      transition: border-color .15s, background .15s; cursor: pointer;
+      padding: 1.25rem; text-align: center; cursor: pointer;
+      transition: border-color .15s, background .15s;
     }
     .dropzone:hover, .dropzone.over { border-color: var(--blue); background: var(--blue-lt); }
-    .dropzone.done-upload { border-color: var(--prod); background: #e6f4ee; border-style: solid; }
-    .dropzone p   { font-size: .82rem; color: var(--muted); margin-top: .4rem; line-height: 1.5; }
-    .dropzone .dz-icon { font-size: 1.4rem; margin-bottom: .25rem; }
+    .dropzone.uploaded { border-color: var(--green); background: #DCFCE7; border-style: solid; }
+    .dropzone p { font-size: .8rem; color: var(--muted); margin-top: .35rem; line-height: 1.5; }
     .dropzone input { display: none; }
 
-    /* Review info box */
-    .info-box {
-      background: var(--blue-lt); border: 1.5px solid #C7D0FF;
-      border-radius: var(--radius); padding: .875rem 1rem;
-      font-size: .82rem; color: var(--text); line-height: 1.55;
+    .info-box { background: var(--blue-lt); border: 1.5px solid #C7D0FF; border-radius: var(--radius); padding: .875rem 1rem; font-size: .82rem; line-height: 1.55; margin-bottom: .875rem; }
+    .field       { margin-bottom: .875rem; }
+    .field label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); margin-bottom: .35rem; text-transform: uppercase; letter-spacing: .05em; }
+    .field input {
+      width: 100%; padding: .55rem .75rem; border: 1.5px solid var(--border);
+      border-radius: 6px; font-size: .875rem; outline: none;
+      transition: border-color .15s, box-shadow .15s;
     }
+    .field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,50,255,.1); }
+    .field input.err   { border-color: #e53e3e; }
 
-    /* Action btn */
-    .action-btn {
-      width: 100%; padding: .65rem;
-      border: none; border-radius: 6px;
-      font-size: .875rem; font-weight: 600; cursor: pointer;
-      transition: background .12s; display: flex; align-items: center; justify-content: center; gap: .5rem;
-    }
-    .action-btn.primary   { background: var(--blue); color: #fff; }
-    .action-btn.primary:hover { background: var(--blue-dk); }
-    .action-btn.success   { background: #0A7A3E; color: #fff; }
-    .action-btn.success:hover { background: #085f30; }
-    .action-btn:disabled  { opacity: .45; pointer-events: none; }
-
-    /* Status bar at bottom of drawer */
-    .drawer-status {
-      padding: .875rem 1.5rem; border-top: 1px solid var(--border);
-      font-size: .78rem; color: var(--muted);
-      display: flex; align-items: center; gap: .5rem;
-    }
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
-    .status-dot.green { background: var(--prod); }
-    .status-dot.blue  { background: var(--blue); }
+    .action-btn { width: 100%; padding: .65rem; border: none; border-radius: 6px; font-size: .875rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: background .12s; }
+    .action-btn.green { background: var(--green); color: #fff; }
+    .action-btn.green:hover { background: #085f30; }
+    .action-btn:disabled { opacity: .45; pointer-events: none; }
 
     /* ── TOAST ── */
-    .toast {
-      position: fixed; bottom: 1.5rem; right: 1.5rem;
-      background: var(--text); color: #fff;
-      padding: .65rem 1rem; border-radius: 6px; font-size: .82rem;
-      opacity: 0; transform: translateY(6px);
-      transition: all .25s; pointer-events: none; z-index: 400;
-    }
+    .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--text); color: #fff; padding: .65rem 1rem; border-radius: 6px; font-size: .82rem; opacity: 0; transform: translateY(6px); transition: all .25s; pointer-events: none; z-index: 400; }
     .toast.show { opacity: 1; transform: translateY(0); }
 
-    footer {
-      text-align: center; padding: 2rem;
-      font-size: .78rem; color: var(--muted);
-      border-top: 1px solid var(--border); margin-top: 3rem; background: #fff;
-    }
+    footer { text-align: center; padding: 2rem; font-size: .78rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 3rem; background: #fff; }
 
     @media (max-width: 600px) {
       .header h1 { font-size: 1.5rem; }
@@ -352,13 +288,11 @@
     </div>
     <div class="sso-body">
       <button class="gh-btn" id="s-btn" onclick="loginGitHub()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
         <span class="btn-label">Fortsett med GitHub</span>
         <div class="spinner"></div>
       </button>
-      <p class="sso-hint">Du vil bli sendt til GitHub for å godkjenne tilgang. Kun organisasjonsmedlemmer får tilgang.</p>
+      <p class="sso-hint">Kun organisasjonsmedlemmer får tilgang.</p>
     </div>
     <div class="sso-footer">Tilgang administreres av IT-avdelingen.</div>
   </div>
@@ -403,7 +337,7 @@
   <div class="filters">
     <div class="search-wrap">
       <svg class="search-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" id="q" placeholder="Søk rapport eller team..." oninput="filter()" />
+      <input type="text" id="q" placeholder="Søk rapport eller team..." oninput="doFilter()" />
     </div>
   </div>
   <div class="section-bar">
@@ -415,87 +349,129 @@
 
 <footer>Fabric Workspace Catalog &nbsp;·&nbsp; Driftes på GitHub Pages</footer>
 
-</div> <!-- /app -->
+</div>
 
 <!-- DRAWER -->
-<div class="drawer-overlay" id="d-overlay" onclick="closeDrawer()"></div>
+<div class="d-overlay" id="d-overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
-  <div class="drawer-head">
+
+  <div class="d-head">
     <div>
-      <div class="drawer-title" id="d-title"></div>
-      <div class="drawer-sub"   id="d-sub"></div>
+      <div class="d-title" id="d-title"></div>
+      <div class="d-sub"   id="d-sub"></div>
     </div>
-    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    <button class="d-close" onclick="closeDrawer()">✕</button>
   </div>
-  <div class="drawer-body">
 
-    <!-- Steg 1: Last ned -->
-    <div class="step active" id="step1">
-      <div class="step-head">
-        <div class="step-num">1</div>
-        <div class="step-name">Last ned og åpne rapporten</div>
-        <span class="step-check">✓</span>
-      </div>
-      <div class="step-body">
-        <p class="step-desc">Last ned rapport-filen og åpne den i Power BI Desktop. Gjør endringene dine og lagre filen når du er ferdig.</p>
-        <button class="dl-btn" id="dl-btn" onclick="downloadPbix()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Last ned rapport
-        </button>
-      </div>
-    </div>
-
-    <!-- Steg 2: Last opp -->
-    <div class="step" id="step2">
-      <div class="step-head">
-        <div class="step-num">2</div>
-        <div class="step-name">Last opp endringene dine</div>
-        <span class="step-check">✓</span>
-      </div>
-      <div class="step-body">
-        <p class="step-desc">Lagre filen i Power BI Desktop, og dra den inn her. Endringene lagres automatisk.</p>
-        <div class="dropzone" id="dz" onclick="document.getElementById('dz-input').click()"
-          ondragover="dzOver(event)" ondragleave="dzLeave()" ondrop="dzDrop(event)">
-          <input type="file" id="dz-input" accept=".pbix" onchange="dzPick(event)" />
-          <div class="dz-icon">📂</div>
-          <strong style="font-size:.85rem;">Dra filen hit</strong>
-          <p>eller klikk for å velge fil &nbsp;·&nbsp; .pbix</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Steg 3: Send til godkjenning -->
-    <div class="step" id="step3">
-      <div class="step-head">
-        <div class="step-num">3</div>
-        <div class="step-name">Send til godkjenning</div>
-        <span class="step-check">✓</span>
-      </div>
-      <div class="step-body">
-        <p class="step-desc">Beskriv kort hva du har endret, så sender vi det til review.</p>
-        <div class="field" style="margin-bottom:.875rem;">
-          <label>Hva har du endret?</label>
-          <input id="change-desc" type="text" placeholder="F.eks. oppdatert salgsfilter for region Nord" />
-        </div>
-        <div class="info-box" style="margin-bottom:.875rem;">
-          Endringen din vil bli gjennomgått før den går til produksjon. Du får beskjed når den er godkjent.
-        </div>
-        <button class="action-btn success" id="submit-btn" onclick="submitReview()" disabled>
-          Send til godkjenning
-        </button>
-      </div>
-    </div>
-
+  <div class="d-tabs">
+    <div class="d-tab active" onclick="switchTab('innhold')">Innhold</div>
+    <div class="d-tab" onclick="switchTab('endringer')" id="tab-endringer">Aktive endringer <span id="tab-badge"></span></div>
   </div>
-  <div class="drawer-status">
-    <div class="status-dot" id="status-dot"></div>
-    <span id="status-txt">Velg en handling for å starte</span>
+
+  <div class="d-body">
+
+    <!-- PANEL: Innhold -->
+    <div class="d-panel active" id="panel-innhold">
+
+      <!-- Rapporter -->
+      <div>
+        <div class="d-section-head">
+          <span class="d-section-lbl">Rapporter</span>
+          <span class="d-count" id="rep-count"></span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.5rem;" id="rep-list"></div>
+      </div>
+
+      <!-- Semantiske modeller -->
+      <div>
+        <div class="d-section-head">
+          <span class="d-section-lbl">Semantiske modeller</span>
+          <span class="d-count" id="mod-count"></span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.5rem;" id="mod-list"></div>
+      </div>
+
+    </div>
+
+    <!-- PANEL: Aktive endringer -->
+    <div class="d-panel" id="panel-endringer">
+      <div>
+        <div class="d-section-head">
+          <span class="d-section-lbl">Pågående arbeid</span>
+          <span class="d-count" id="feat-count"></span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.75rem;" id="feat-list"></div>
+      </div>
+    </div>
+
+    <!-- PANEL: Rediger rapport (vises når man velger en rapport) -->
+    <div class="d-panel" id="panel-rediger">
+      <div class="work-panel">
+        <button class="work-back" onclick="backToInnhold()">
+          ← Tilbake til innhold
+        </button>
+
+        <div class="step active" id="step1">
+          <div class="step-head">
+            <div class="step-num">1</div>
+            <div class="step-name">Last ned og åpne i Desktop</div>
+            <span class="step-check">✓</span>
+          </div>
+          <div class="step-body">
+            <p class="step-desc">Last ned filen og åpne den i Power BI Desktop. Gjør endringene dine og lagre når du er ferdig.</p>
+            <button class="dl-btn" id="dl-btn" onclick="downloadPbix()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Last ned
+            </button>
+          </div>
+        </div>
+
+        <div class="step" id="step2">
+          <div class="step-head">
+            <div class="step-num">2</div>
+            <div class="step-name">Last opp endringene dine</div>
+            <span class="step-check">✓</span>
+          </div>
+          <div class="step-body">
+            <p class="step-desc">Lagre filen i Power BI Desktop og dra den inn her.</p>
+            <div class="dropzone" id="dz"
+              onclick="document.getElementById('dz-input').click()"
+              ondragover="dzOver(event)" ondragleave="dzLeave()" ondrop="dzDrop(event)">
+              <input type="file" id="dz-input" accept=".pbix" onchange="dzPick(event)" />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--muted);margin:0 auto .35rem"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <strong style="font-size:.85rem;">Dra filen hit</strong>
+              <p>eller klikk for å velge &nbsp;·&nbsp; .pbix</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="step" id="step3">
+          <div class="step-head">
+            <div class="step-num">3</div>
+            <div class="step-name">Send til godkjenning</div>
+            <span class="step-check">✓</span>
+          </div>
+          <div class="step-body">
+            <p class="step-desc">Beskriv kort hva du har endret.</p>
+            <div class="field">
+              <label>Hva har du endret?</label>
+              <input id="change-desc" type="text" placeholder="F.eks. oppdatert filter for region Nord" />
+            </div>
+            <div class="info-box">Endringen gjennomgås før den publiseres. Du får beskjed når den er godkjent.</div>
+            <button class="action-btn green" id="submit-btn" onclick="submitReview()" disabled>Send til godkjenning</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+// ── Data ──────────────────────────────────────────
 const WS = [
   {
     id: "ws-salg",
@@ -503,10 +479,22 @@ const WS = [
     team: "Salg",
     desc: "Salgsdashboards, pipeline-analyse og CRM-datakvalitet.",
     tags: ["salg", "crm", "dynamics"],
-    reports: 12,
     updated: "17. mai 2026",
-    pbix: "salg-dashboard.pbix",
-    fabricUrl: "https://app.powerbi.com/groups/salg-prod",
+    rapporter: [
+      { name: "Salgsoversikt",       file: "salg-oversikt.pbix",   updated: "17. mai" },
+      { name: "Pipeline analyse",    file: "pipeline.pbix",        updated: "15. mai" },
+      { name: "Regionalt salg",      file: "region-salg.pbix",     updated: "12. mai" },
+      { name: "Kundeverdi (CLV)",    file: "clv.pbix",             updated: "8. mai"  },
+    ],
+    modeller: [
+      { name: "Salg Semantic Model", file: "salg-model.bim",       updated: "16. mai" },
+      { name: "Kunde Semantic Model",file: "kunde-model.bim",      updated: "10. mai" },
+    ],
+    endringer: [
+      { name: "Legg til filter for region Nord",     who: "Anne Hansen",  status: "under-arbeid", updated: "I dag"      },
+      { name: "Fikse feil i budsjett-beregning",     who: "Lars Eriksen", status: "til-godkjenning", updated: "I går"   },
+      { name: "Ny KPI: konverteringsgrad per kanal", who: "Maria Berg",   status: "godkjent",     updated: "14. mai"   },
+    ],
   },
   {
     id: "ws-finans",
@@ -514,10 +502,19 @@ const WS = [
     team: "Finans",
     desc: "Månedlig rapportering, budsjettavvik og likviditetsanalyse.",
     tags: ["finans", "regnskap", "sap"],
-    reports: 8,
     updated: "15. mai 2026",
-    pbix: "finans-monthly.pbix",
-    fabricUrl: "https://app.powerbi.com/groups/finans-prod",
+    rapporter: [
+      { name: "Månedlig P&L",        file: "pl-monthly.pbix",      updated: "15. mai" },
+      { name: "Budsjettavvik",       file: "budsjett.pbix",        updated: "13. mai" },
+      { name: "Likviditet",          file: "likviditet.pbix",      updated: "10. mai" },
+    ],
+    modeller: [
+      { name: "Finans Semantic Model", file: "finans-model.bim",   updated: "14. mai" },
+    ],
+    endringer: [
+      { name: "Oppdater valutakurser Q2",  who: "Kari Olsen",  status: "til-godkjenning", updated: "I dag" },
+      { name: "Legg til kostnadssenter 44",who: "Per Dahl",    status: "under-arbeid",    updated: "I går" },
+    ],
   },
   {
     id: "ws-verksted",
@@ -525,10 +522,20 @@ const WS = [
     team: "Ettermarked",
     desc: "Verkstedkapasitet, servicegrad, deler og garantisaker.",
     tags: ["verksted", "service"],
-    reports: 9,
     updated: "16. mai 2026",
-    pbix: "verksted-kpi.pbix",
-    fabricUrl: "https://app.powerbi.com/groups/verksted-prod",
+    rapporter: [
+      { name: "Verkstedkapasitet",   file: "kapasitet.pbix",       updated: "16. mai" },
+      { name: "Servicegrad",         file: "servicegrad.pbix",     updated: "14. mai" },
+      { name: "Garantisaker",        file: "garanti.pbix",         updated: "11. mai" },
+      { name: "Deler og lager",      file: "deler.pbix",           updated: "9. mai"  },
+    ],
+    modeller: [
+      { name: "Verksted Semantic Model", file: "verksted-model.bim", updated: "15. mai" },
+    ],
+    endringer: [
+      { name: "Ny visning for garantiavvik",  who: "Tone Lund",   status: "godkjent",     updated: "13. mai" },
+      { name: "KPI for first-time-fix rate",  who: "Ola Berg",    status: "under-arbeid", updated: "I dag"   },
+    ],
   },
   {
     id: "ws-brukt",
@@ -536,37 +543,44 @@ const WS = [
     team: "Bruktbil",
     desc: "Innbyttepris, lagringstid, margin og rotasjonsanalyse per modell.",
     tags: ["bruktbil", "innbytte", "margin"],
-    reports: 7,
     updated: "14. mai 2026",
-    pbix: "bruktbil-analyse.pbix",
-    fabricUrl: "https://app.powerbi.com/groups/brukt-prod",
+    rapporter: [
+      { name: "Innbytteoversikt",    file: "innbytte.pbix",        updated: "14. mai" },
+      { name: "Lagringstid per modell", file: "lagringstid.pbix", updated: "12. mai" },
+      { name: "Marginanalyse",       file: "margin.pbix",          updated: "9. mai"  },
+    ],
+    modeller: [
+      { name: "Bruktbil Semantic Model", file: "brukt-model.bim", updated: "13. mai" },
+    ],
+    endringer: [
+      { name: "Segmentering på EL vs. fossil", who: "Ida Haug",  status: "under-arbeid",    updated: "I dag" },
+      { name: "Historikk 24 mnd tilbake",      who: "Rune Mo",   status: "til-godkjenning", updated: "I går" },
+      { name: "Fjern duplikat i VIN-kobling",  who: "Eva Krog",  status: "godkjent",        updated: "10. mai" },
+    ],
   },
 ];
 
-// ── State ──────────────────────────────────────────
-let currentWs = null;
+// ── State ─────────────────────────────────────────
+let currentWs   = null;
 let uploadedFile = null;
+let currentTab  = 'innhold';
 
-// ── GitHub login (demo) ───────────────────────────
+// ── SSO ───────────────────────────────────────────
 function loginGitHub() {
-  const btn = document.getElementById('s-btn');
-  btn.classList.add('loading');
+  document.getElementById('s-btn').classList.add('loading');
   setTimeout(() => completeLogin('bredeespelid'), 1600);
 }
-
 function completeLogin(username) {
   const sso = document.getElementById('sso');
   sso.classList.add('out');
   setTimeout(() => sso.style.display = 'none', 350);
-
-  const initials = username.slice(0, 2).toUpperCase();
   document.getElementById('nav-name').textContent   = username;
-  document.getElementById('nav-avatar').textContent = initials;
+  document.getElementById('nav-avatar').textContent = username.slice(0, 2).toUpperCase();
   document.getElementById('nav-user').style.display = 'flex';
 }
 
-// ── Filters ───────────────────────────────────────
-function filter() {
+// ── Filter ────────────────────────────────────────
+function doFilter() {
   const q = document.getElementById('q').value.toLowerCase();
   const list = WS.filter(w =>
     !q || [w.name, w.team, ...w.tags, w.desc].some(s => s.toLowerCase().includes(q))
@@ -576,42 +590,44 @@ function filter() {
 
 // ── Grid ──────────────────────────────────────────
 function renderGrid(list) {
+  const totalReps = list.reduce((s, w) => s + w.rapporter.length, 0);
   document.getElementById('ct').textContent = `${list.length} av ${WS.length}`;
-  document.getElementById('grid').innerHTML = list.map(w => `
+  document.getElementById('grid').innerHTML = list.map(w => {
+    const open = w.endringer.filter(e => e.status !== 'godkjent').length;
+    return `
     <div class="card" onclick="openDrawer('${w.id}')">
       <div class="card-head">
         <div>
           <div class="card-title">${w.name}</div>
           <div class="card-team">${w.team}</div>
         </div>
+        ${open > 0 ? `<span class="status s-work">${open} aktive</span>` : ''}
       </div>
       <div class="card-desc">${w.desc}</div>
       <div class="tags">${w.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
       <div class="card-foot">
         <div class="card-meta">
-          <span>${w.reports} rapporter</span>
+          <span>${w.rapporter.length} rapporter</span>
+          <span>${w.modeller.length} modeller</span>
           <span>Oppdatert ${w.updated}</span>
         </div>
-        <button class="card-open">Åpne og rediger</button>
+        <button class="card-open">Åpne workspace</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 // ── Drawer ────────────────────────────────────────
 function openDrawer(id) {
-  currentWs = WS.find(w => w.id === id);
+  currentWs    = WS.find(w => w.id === id);
   uploadedFile = null;
 
   document.getElementById('d-title').textContent = currentWs.name;
-  document.getElementById('d-sub').textContent   = currentWs.team + ' · ' + (currentWs.env === 'prod' ? 'Produksjon' : 'Utvikling');
+  document.getElementById('d-sub').textContent   = currentWs.team;
 
-  // Reset steps
-  setStep(1);
-  resetUpload();
-  document.getElementById('change-desc').value = '';
-  document.getElementById('submit-btn').disabled = true;
-  setStatus('Klar — start med å laste ned rapporten', '');
+  renderInnhold();
+  renderEndringer();
+  switchTab('innhold');
 
   document.getElementById('d-overlay').classList.add('open');
   document.getElementById('drawer').classList.add('open');
@@ -619,6 +635,103 @@ function openDrawer(id) {
 function closeDrawer() {
   document.getElementById('d-overlay').classList.remove('open');
   document.getElementById('drawer').classList.remove('open');
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.d-tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.d-panel').forEach(el => el.classList.remove('active'));
+  event?.currentTarget?.classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  // Re-activate correct tab button
+  document.querySelectorAll('.d-tab').forEach(el => {
+    if (el.getAttribute('onclick')?.includes(tab)) el.classList.add('active');
+  });
+}
+
+// ── Innhold panel ─────────────────────────────────
+function renderInnhold() {
+  const ws = currentWs;
+  document.getElementById('rep-count').textContent = ws.rapporter.length + ' stk';
+  document.getElementById('mod-count').textContent = ws.modeller.length + ' stk';
+
+  document.getElementById('rep-list').innerHTML = ws.rapporter.map((r, i) => `
+    <div class="item-row">
+      <div class="item-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 16l4-8 4 8"/><path d="M9 12h6"/></svg>
+      </div>
+      <div class="item-info">
+        <div class="item-name">${r.name}</div>
+        <div class="item-meta">Oppdatert ${r.updated}</div>
+      </div>
+      <button class="item-btn primary" onclick="openRediger(${i},'rapport')">Åpne og rediger</button>
+    </div>
+  `).join('');
+
+  document.getElementById('mod-list').innerHTML = ws.modeller.map((m, i) => `
+    <div class="item-row">
+      <div class="item-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      </div>
+      <div class="item-info">
+        <div class="item-name">${m.name}</div>
+        <div class="item-meta">Oppdatert ${m.updated}</div>
+      </div>
+      <button class="item-btn" onclick="openRediger(${i},'modell')">Åpne og rediger</button>
+    </div>
+  `).join('');
+}
+
+// ── Endringer panel ───────────────────────────────
+function renderEndringer() {
+  const ws   = currentWs;
+  const åpne = ws.endringer.filter(e => e.status !== 'godkjent');
+  const badge = ws.endringer.filter(e => e.status !== 'godkjent').length;
+  document.getElementById('tab-badge').textContent = badge > 0 ? `(${badge})` : '';
+  document.getElementById('feat-count').textContent = ws.endringer.length + ' totalt';
+
+  const statusLbl = { 'under-arbeid': 'Under arbeid', 'til-godkjenning': 'Til godkjenning', 'godkjent': 'Godkjent' };
+  const statusCls = { 'under-arbeid': 's-work', 'til-godkjenning': 's-review', 'godkjent': 's-done' };
+
+  document.getElementById('feat-list').innerHTML = ws.endringer.map(e => `
+    <div class="feature-card">
+      <div class="feature-top">
+        <div class="feature-name">${e.name}</div>
+        <span class="status ${statusCls[e.status]}">${statusLbl[e.status]}</span>
+      </div>
+      <div class="feature-meta">
+        <span>${e.who}</span>
+        <span>${e.updated}</span>
+      </div>
+      ${e.status === 'til-godkjenning' ? `
+      <div class="feature-actions">
+        <button class="item-btn primary" onclick="showToast('Godkjenning sendt')">Godkjenn</button>
+        <button class="item-btn" onclick="showToast('Tilbakemelding sendt')">Send tilbake</button>
+      </div>` : ''}
+    </div>
+  `).join('');
+}
+
+// ── Rediger panel ─────────────────────────────────
+function openRediger(idx, type) {
+  const item = type === 'rapport' ? currentWs.rapporter[idx] : currentWs.modeller[idx];
+  document.getElementById('dl-btn').textContent = `Last ned ${item.file}`;
+  document.getElementById('dl-btn').disabled = false;
+  document.getElementById('dl-btn').style.background = '';
+
+  resetUpload();
+  setStep(1);
+  document.getElementById('change-desc').value = '';
+  document.getElementById('submit-btn').disabled = true;
+
+  document.querySelectorAll('.d-panel').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.d-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('panel-rediger').classList.add('active');
+}
+function backToInnhold() {
+  document.querySelectorAll('.d-panel').forEach(el => el.classList.remove('active'));
+  document.getElementById('panel-innhold').classList.add('active');
+  document.querySelectorAll('.d-tab').forEach((el, i) => { if (i === 0) el.classList.add('active'); });
 }
 
 function setStep(n) {
@@ -632,114 +745,82 @@ function setStep(n) {
 
 // ── Download ──────────────────────────────────────
 function downloadPbix() {
-  // In production: direct link to raw file in GitHub repo
-  // Here we simulate the download
   const btn = document.getElementById('dl-btn');
   btn.disabled = true;
-  btn.innerHTML = '<div style="width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></div> Laster ned...';
-
+  btn.innerHTML = '<svg width="13" height="13" style="border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block"></svg> Laster ned...';
   setTimeout(() => {
     btn.innerHTML = '✓ Lastet ned';
-    btn.style.background = '#0A7A3E';
-    document.getElementById('step1').classList.remove('active');
-    document.getElementById('step1').classList.add('done');
+    btn.style.background = 'var(--green)';
     setStep(2);
-    setStatus('Rapport lastet ned — rediger og last opp igjen', 'blue');
-    showToast('Fil lastet ned — åpne den i Power BI Desktop');
+    showToast('Fil lastet ned — åpne i Power BI Desktop');
   }, 1200);
 }
 
-// ── Upload / drop zone ────────────────────────────
+// ── Upload ────────────────────────────────────────
 function dzOver(e)  { e.preventDefault(); document.getElementById('dz').classList.add('over'); }
 function dzLeave()  { document.getElementById('dz').classList.remove('over'); }
 function dzDrop(e)  { e.preventDefault(); dzLeave(); handleFile(e.dataTransfer.files[0]); }
 function dzPick(e)  { handleFile(e.target.files[0]); }
 
 function handleFile(file) {
-  if (!file || !file.name.endsWith('.pbix')) {
-    showToast('Velg en .pbix-fil');
-    return;
-  }
+  if (!file || !file.name.endsWith('.pbix')) { showToast('Velg en .pbix-fil'); return; }
   uploadedFile = file;
   const dz = document.getElementById('dz');
-  dz.classList.add('done-upload');
+  dz.classList.add('uploaded');
   dz.innerHTML = `
-    <div class="dz-icon">✓</div>
-    <strong style="font-size:.85rem;color:#0A7A3E">${file.name}</strong>
-    <p style="color:#0A7A3E">${(file.size / 1024).toFixed(0)} KB — klar til innsending</p>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" style="margin:0 auto .35rem"><polyline points="20 6 9 17 4 12"/></svg>
+    <strong style="font-size:.85rem;color:var(--green)">${file.name}</strong>
+    <p style="color:var(--green)">${(file.size/1024).toFixed(0)} KB — klar til innsending</p>
   `;
-
-  document.getElementById('step2').classList.remove('active');
-  document.getElementById('step2').classList.add('done');
   setStep(3);
   document.getElementById('submit-btn').disabled = false;
-  setStatus('Fil klar — beskriv endringen og send til godkjenning', 'blue');
+  showToast('Fil klar');
 }
 
 function resetUpload() {
   const dz = document.getElementById('dz');
-  dz.classList.remove('done-upload', 'over');
+  dz.className = 'dropzone';
   dz.innerHTML = `
     <input type="file" id="dz-input" accept=".pbix" onchange="dzPick(event)" />
-    <div class="dz-icon">📂</div>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--muted);margin:0 auto .35rem"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
     <strong style="font-size:.85rem;">Dra filen hit</strong>
-    <p>eller klikk for å velge fil &nbsp;·&nbsp; .pbix</p>
+    <p>eller klikk for å velge &nbsp;·&nbsp; .pbix</p>
   `;
   dz.onclick = () => document.getElementById('dz-input').click();
 }
 
-// ── Submit review ─────────────────────────────────
+// ── Submit ────────────────────────────────────────
 function submitReview() {
   const desc = document.getElementById('change-desc').value.trim();
-  if (!desc) {
-    document.getElementById('change-desc').focus();
-    document.getElementById('change-desc').classList.add('err');
-    setTimeout(() => document.getElementById('change-desc').classList.remove('err'), 1500);
-    return;
-  }
-
+  if (!desc) { document.getElementById('change-desc').classList.add('err'); setTimeout(() => document.getElementById('change-desc').classList.remove('err'), 1500); return; }
   const btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-  btn.textContent = 'Sender...';
-
-  // Simulate API call
+  btn.disabled = true; btn.textContent = 'Sender...';
   setTimeout(() => {
-    document.getElementById('step3').classList.remove('active');
-    document.getElementById('step3').classList.add('done');
-    setStatus('Sendt til godkjenning — du får beskjed når den er klar', 'green');
+    setStep(4);
     btn.textContent = '✓ Sendt til godkjenning';
-    btn.style.background = '#0A7A3E';
+    btn.style.background = 'var(--green)';
     showToast('Endringen er sendt til gjennomgang');
   }, 1400);
 }
 
 // ── Utils ─────────────────────────────────────────
-function setStatus(txt, dot) {
-  document.getElementById('status-txt').textContent = txt;
-  const d = document.getElementById('status-dot');
-  d.className = 'status-dot' + (dot ? ' ' + dot : '');
-}
-
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
 }
-
 function anim(id, n) {
-  const el = document.getElementById(id);
-  let i = 0, step = Math.ceil(n / 18);
-  const t = setInterval(() => { i = Math.min(i + step, n); el.textContent = i; if (i >= n) clearInterval(t); }, 45);
+  const el = document.getElementById(id); let i = 0, s = Math.ceil(n/18);
+  const t = setInterval(() => { i = Math.min(i+s, n); el.textContent = i; if(i>=n) clearInterval(t); }, 45);
 }
 
 // ── Init ──────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  const totalReps = WS.reduce((s, w) => s + w.rapporter.length, 0);
   anim('s-total', WS.length);
-  anim('s-reps',  WS.reduce((s, w) => s + w.reports, 0));
+  anim('s-reps',  totalReps);
   anim('s-teams', new Set(WS.map(w => w.team)).size);
-  filter();
-
+  doFilter();
 });
 </script>
 </body>
