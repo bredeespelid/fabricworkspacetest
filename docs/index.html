@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fabric Workspace Catalog — Møller Bil</title>
+  <title>Fabric Workspace Catalog</title>
   <style>
     :root {
       --blue:       #0032FF;
@@ -22,6 +22,102 @@
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 15px; }
+
+    /* SSO SCREEN */
+    #sso-screen {
+      position: fixed; inset: 0; z-index: 1000;
+      background: #F5F6FA;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #sso-screen.hidden { display: none; }
+
+    .sso-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.09);
+      width: 100%;
+      max-width: 400px;
+      margin: 1rem;
+      overflow: hidden;
+    }
+    .sso-top {
+      background: var(--blue);
+      padding: 2rem 2rem 1.75rem;
+      text-align: center;
+    }
+    .sso-logo {
+      display: inline-flex; align-items: center; gap: .5rem;
+      color: #fff; font-weight: 700; font-size: 1.05rem; margin-bottom: 1.25rem;
+    }
+    .sso-logo-mark {
+      width: 30px; height: 30px; background: rgba(255,255,255,.2);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    }
+    .sso-top h1 { color: #fff; font-size: 1.1rem; font-weight: 600; margin-bottom: .25rem; }
+    .sso-top p  { color: rgba(255,255,255,.7); font-size: .82rem; }
+
+    .sso-body { padding: 1.75rem 2rem; }
+
+    .sso-ms-btn {
+      width: 100%; padding: .7rem 1rem;
+      border: 1.5px solid var(--border); border-radius: 6px;
+      background: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: .75rem;
+      font-size: .875rem; font-weight: 600; color: var(--text);
+      transition: border-color .15s, background .15s;
+      margin-bottom: 1.25rem;
+    }
+    .sso-ms-btn:hover { border-color: #0078d4; background: #f0f6ff; }
+
+    .sso-divider {
+      display: flex; align-items: center; gap: .75rem;
+      font-size: .75rem; color: var(--muted); margin-bottom: 1.25rem;
+    }
+    .sso-divider::before, .sso-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    .sso-field { margin-bottom: .875rem; }
+    .sso-field label { display: block; font-size: .78rem; font-weight: 600; color: var(--muted); margin-bottom: .35rem; text-transform: uppercase; letter-spacing: .05em; }
+    .sso-field input {
+      width: 100%; padding: .55rem .75rem;
+      border: 1.5px solid var(--border); border-radius: 6px;
+      font-size: .875rem; outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .sso-field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,50,255,.1); }
+
+    .sso-submit {
+      width: 100%; padding: .65rem;
+      background: var(--blue); color: #fff;
+      border: none; border-radius: 6px;
+      font-size: .875rem; font-weight: 600;
+      cursor: pointer; margin-top: .25rem;
+      transition: background .15s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+    }
+    .sso-submit:hover { background: var(--blue-dark); }
+    .sso-submit.loading { pointer-events: none; opacity: .8; }
+
+    .sso-spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: none;
+    }
+    .sso-submit.loading .sso-spinner { display: block; }
+    .sso-submit.loading .sso-btn-text { display: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .sso-footer { padding: 1rem 2rem; border-top: 1px solid var(--border); text-align: center; font-size: .75rem; color: var(--muted); }
+
+    /* App blur when logging in */
+    #app { transition: filter .3s, opacity .3s; }
+    #app.blurred { filter: blur(4px); opacity: .4; pointer-events: none; }
 
     /* NAV */
     nav {
@@ -249,6 +345,61 @@
 </head>
 <body>
 
+<!-- SSO LOGIN SCREEN -->
+<div id="sso-screen">
+  <div class="sso-card">
+    <div class="sso-top">
+      <div class="sso-logo">
+        <div class="sso-logo-mark">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <rect x="2" y="8" width="4" height="6" fill="white" rx="1"/>
+            <rect x="6" y="5" width="4" height="9" fill="white" rx="1"/>
+            <rect x="10" y="2" width="4" height="12" fill="white" rx="1"/>
+          </svg>
+        </div>
+        Fabric Catalog
+      </div>
+      <h1>Logg inn</h1>
+      <p>Intern tilgang</p>
+    </div>
+
+    <div class="sso-body">
+      <button class="sso-ms-btn" onclick="ssoMicrosoft()">
+        <svg width="20" height="20" viewBox="0 0 21 21" fill="none">
+          <rect x="1" y="1" width="9" height="9" fill="#F25022"/>
+          <rect x="11" y="1" width="9" height="9" fill="#7FBA00"/>
+          <rect x="1" y="11" width="9" height="9" fill="#00A4EF"/>
+          <rect x="11" y="11" width="9" height="9" fill="#FFB900"/>
+        </svg>
+        Fortsett med Microsoft-konto
+      </button>
+
+      <div class="sso-divider">eller logg inn manuelt</div>
+
+      <div class="sso-field">
+        <label>E-post</label>
+        <input id="sso-email" type="email" placeholder="fornavn.etternavn@firma.no" />
+      </div>
+      <div class="sso-field">
+        <label>Passord</label>
+        <input id="sso-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')ssoLogin()" />
+      </div>
+
+      <button class="sso-submit" id="sso-btn" onclick="ssoLogin()">
+        <div class="sso-spinner"></div>
+        <span class="sso-btn-text">Logg inn</span>
+      </button>
+    </div>
+
+    <div class="sso-footer">
+      Tilgang administreres av IT. Kontakt din IT-administrator ved problemer.
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
 <nav>
   <a href="#" class="nav-logo">
     <div class="nav-logo-mark">
@@ -368,7 +519,7 @@
 </div>
 
 <footer>
-  Fabric Workspace Catalog &nbsp;·&nbsp; Møller Bil &nbsp;·&nbsp; Driftes på GitHub Pages
+  Fabric Workspace Catalog &nbsp;·&nbsp; Driftes på GitHub Pages
 </footer>
 
 <div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
@@ -562,6 +713,61 @@ document.addEventListener('DOMContentLoaded', () => {
   animCount('stat-teams', teams);
   applyFilters();
 });
+
+// ── SSO ──────────────────────────────────────────────
+function ssoMicrosoft() {
+  const btn = document.getElementById('sso-btn');
+  // Simulate redirect to Microsoft — just run the same loading flow
+  document.querySelector('.sso-ms-btn').disabled = true;
+  document.querySelector('.sso-ms-btn').style.opacity = '.5';
+  btn.classList.add('loading');
+  btn.querySelector('.sso-btn-text').style.display = 'none';
+  btn.querySelector('.sso-spinner').style.display = 'block';
+  setTimeout(completeLogin, 1800);
+}
+
+function ssoLogin() {
+  const email = document.getElementById('sso-email').value.trim();
+  const pass  = document.getElementById('sso-pass').value;
+  const btn   = document.getElementById('sso-btn');
+
+  if (!email) {
+    document.getElementById('sso-email').focus();
+    document.getElementById('sso-email').style.borderColor = 'red';
+    setTimeout(() => document.getElementById('sso-email').style.borderColor = '', 1500);
+    return;
+  }
+  if (!pass) {
+    document.getElementById('sso-pass').focus();
+    document.getElementById('sso-pass').style.borderColor = 'red';
+    setTimeout(() => document.getElementById('sso-pass').style.borderColor = '', 1500);
+    return;
+  }
+
+  btn.classList.add('loading');
+  setTimeout(completeLogin, 1600);
+}
+
+function completeLogin() {
+  const screen = document.getElementById('sso-screen');
+  const app    = document.getElementById('app');
+
+  // Fade out login screen
+  screen.style.transition = 'opacity .4s';
+  screen.style.opacity = '0';
+
+  setTimeout(() => {
+    screen.classList.add('hidden');
+    // Show nav item with user name based on email input (or default)
+    const email = document.getElementById('sso-email').value.trim();
+    const name  = email
+      ? email.split('@')[0].replace('.', ' ').replace(/\b\w/g, c => c.toUpperCase())
+      : 'Bruker';
+    const userEl = document.getElementById('nav-user');
+    if (userEl) userEl.textContent = name;
+    document.getElementById('nav-user-wrap').style.display = 'flex';
+  }, 400);
+}
 </script>
 </body>
 </html>
