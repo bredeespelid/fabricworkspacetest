@@ -547,79 +547,22 @@ const WS = [
 let currentWs = null;
 let uploadedFile = null;
 
-// ── GitHub OAuth ──────────────────────────────────
-// Sett inn din GitHub OAuth App client_id her etter opprettelse
-const GITHUB_CLIENT_ID = 'YOUR_CLIENT_ID';
-const OAUTH_REDIRECT    = window.location.origin + window.location.pathname;
-
+// ── GitHub login (demo) ───────────────────────────
 function loginGitHub() {
-  document.getElementById('s-btn').classList.add('loading');
-  const state = crypto.randomUUID();
-  sessionStorage.setItem('oauth_state', state);
-  const url = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(OAUTH_REDIRECT)}&scope=repo&state=${state}`;
-  window.location.href = url;
+  const btn = document.getElementById('s-btn');
+  btn.classList.add('loading');
+  setTimeout(() => completeLogin('bredeespelid'), 1600);
 }
 
-async function handleOAuthCallback() {
-  const params = new URLSearchParams(window.location.search);
-  const code   = params.get('code');
-  const state  = params.get('state');
-  if (!code) return;
-
-  // Fjern kode fra URL uten reload
-  window.history.replaceState({}, '', window.location.pathname);
-
-  if (state !== sessionStorage.getItem('oauth_state')) {
-    alert('Ugyldig state — prøv igjen.');
-    return;
-  }
-
-  document.getElementById('s-btn').classList.add('loading');
-
-  // Token-utveksling via Cloudflare Worker (krever backend)
-  // Bytt ut URL med din Worker-endepunkt
-  const WORKER_URL = 'https://your-worker.workers.dev/token';
-  try {
-    const res  = await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code }),
-    });
-    const data = await res.json();
-    if (!data.access_token) throw new Error('Ingen token');
-    sessionStorage.setItem('gh_token', data.access_token);
-    await fetchAndLogin(data.access_token);
-  } catch {
-    // Demo-fallback: vis innlogget uten ekte token
-    completeLogin({ login: 'demo-bruker', name: 'Demo Bruker', avatar_url: '' });
-  }
-}
-
-async function fetchAndLogin(token) {
-  const res  = await fetch('https://api.github.com/user', {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  const user = await res.json();
-  completeLogin(user);
-}
-
-function completeLogin(user) {
-  sessionStorage.setItem('gh_user', JSON.stringify(user));
+function completeLogin(username) {
   const sso = document.getElementById('sso');
   sso.classList.add('out');
   setTimeout(() => sso.style.display = 'none', 350);
 
-  const name     = user.name || user.login || 'Bruker';
-  const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  document.getElementById('nav-name').textContent    = name;
-  document.getElementById('nav-avatar').textContent  = initials;
-  document.getElementById('nav-user').style.display  = 'flex';
-}
-
-function checkExistingSession() {
-  const stored = sessionStorage.getItem('gh_user');
-  if (stored) { completeLogin(JSON.parse(stored)); return true; }
-  return false;
+  const initials = username.slice(0, 2).toUpperCase();
+  document.getElementById('nav-name').textContent   = username;
+  document.getElementById('nav-avatar').textContent = initials;
+  document.getElementById('nav-user').style.display = 'flex';
 }
 
 // ── Filters ───────────────────────────────────────
@@ -797,7 +740,6 @@ document.addEventListener('DOMContentLoaded', () => {
   anim('s-teams', new Set(WS.map(w => w.team)).size);
   filter();
 
-  if (!checkExistingSession()) handleOAuthCallback();
 });
 </script>
 </body>
