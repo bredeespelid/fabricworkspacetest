@@ -173,8 +173,6 @@
       display: flex; align-items: center; gap: .4rem;
     }
     .pill:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
-    .pill.active.f-prod { background: #e6f4ee; border-color: var(--prod); color: var(--prod); }
-    .pill.active.f-dev  { background: var(--blue-lt); border-color: var(--blue); color: var(--blue); }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
     /* ── GRID ── */
@@ -194,12 +192,6 @@
     .card-head  { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
     .card-title { font-size: .975rem; font-weight: 700; line-height: 1.35; }
     .card-team  { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
-    .badge {
-      padding: .2rem .55rem; border-radius: 4px;
-      font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; flex-shrink: 0;
-    }
-    .b-prod { background: #e6f4ee; color: var(--prod); }
-    .b-dev  { background: var(--blue-lt); color: var(--blue); }
     .card-desc { font-size: .83rem; color: var(--muted); line-height: 1.55; }
     .tags { display: flex; flex-wrap: wrap; gap: .35rem; }
     .tag  { padding: .15rem .5rem; border-radius: 4px; background: var(--bg); border: 1px solid var(--border); font-size: .73rem; color: var(--muted); }
@@ -430,7 +422,6 @@
     <p>Finn rapporten du vil jobbe med og start direkte i Power BI Desktop.</p>
     <div class="stats">
       <div class="stat"><div class="num" id="s-total">0</div><div class="lbl">Workspaces</div></div>
-      <div class="stat"><div class="num" id="s-prod">0</div><div class="lbl">Produksjon</div></div>
       <div class="stat"><div class="num" id="s-reps">0</div><div class="lbl">Rapporter</div></div>
       <div class="stat"><div class="num" id="s-teams">0</div><div class="lbl">Team</div></div>
     </div>
@@ -443,9 +434,6 @@
       <svg class="search-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input type="text" id="q" placeholder="Søk rapport eller team..." oninput="filter()" />
     </div>
-    <button class="pill f-prod" id="fp" onclick="toggleEnv('prod')"><span class="dot"></span>Produksjon</button>
-    <button class="pill f-dev"  id="fd" onclick="toggleEnv('dev')"><span class="dot"></span>Utvikling</button>
-    <button class="pill" onclick="clearF()">Nullstill</button>
   </div>
   <div class="section-bar">
     <span class="section-lbl">Workspaces</span>
@@ -542,7 +530,6 @@ const WS = [
     id: "ws-salg",
     name: "Salg og CRM",
     team: "Salg",
-    env: "prod",
     desc: "Salgsdashboards, pipeline-analyse og CRM-datakvalitet.",
     tags: ["salg", "crm", "dynamics"],
     reports: 12,
@@ -551,22 +538,9 @@ const WS = [
     fabricUrl: "https://app.powerbi.com/groups/salg-prod",
   },
   {
-    id: "ws-salg-dev",
-    name: "Salg og CRM",
-    team: "Salg",
-    env: "dev",
-    desc: "Arbeidsversjon av salgs-workspace. Her kan du jobbe fritt.",
-    tags: ["salg", "crm"],
-    reports: 14,
-    updated: "18. mai 2026",
-    pbix: "salg-dashboard.pbix",
-    fabricUrl: "https://app.powerbi.com/groups/salg-dev",
-  },
-  {
     id: "ws-finans",
     name: "Finans og Regnskap",
     team: "Finans",
-    env: "prod",
     desc: "Månedlig rapportering, budsjettavvik og likviditetsanalyse.",
     tags: ["finans", "regnskap", "sap"],
     reports: 8,
@@ -578,7 +552,6 @@ const WS = [
     id: "ws-verksted",
     name: "Verksted og Ettermarked",
     team: "Ettermarked",
-    env: "prod",
     desc: "Verkstedkapasitet, servicegrad, deler og garantisaker.",
     tags: ["verksted", "service"],
     reports: 9,
@@ -590,7 +563,6 @@ const WS = [
     id: "ws-brukt",
     name: "Bruktbil og Innbytte",
     team: "Bruktbil",
-    env: "prod",
     desc: "Innbyttepris, lagringstid, margin og rotasjonsanalyse per modell.",
     tags: ["bruktbil", "innbytte", "margin"],
     reports: 7,
@@ -601,7 +573,6 @@ const WS = [
 ];
 
 // ── State ──────────────────────────────────────────
-let envFilter = new Set();
 let currentWs = null;
 let uploadedFile = null;
 
@@ -637,25 +608,11 @@ function completeLogin(email) {
 }
 
 // ── Filters ───────────────────────────────────────
-function toggleEnv(e) {
-  envFilter.has(e) ? envFilter.delete(e) : envFilter.add(e);
-  document.getElementById(e === 'prod' ? 'fp' : 'fd').classList.toggle('active');
-  filter();
-}
-function clearF() {
-  envFilter.clear();
-  document.getElementById('fp').classList.remove('active');
-  document.getElementById('fd').classList.remove('active');
-  document.getElementById('q').value = '';
-  filter();
-}
 function filter() {
   const q = document.getElementById('q').value.toLowerCase();
-  const list = WS.filter(w => {
-    const eOk = envFilter.size === 0 || envFilter.has(w.env);
-    const qOk = !q || [w.name, w.team, ...w.tags, w.desc].some(s => s.toLowerCase().includes(q));
-    return eOk && qOk;
-  });
+  const list = WS.filter(w =>
+    !q || [w.name, w.team, ...w.tags, w.desc].some(s => s.toLowerCase().includes(q))
+  );
   renderGrid(list);
 }
 
@@ -669,7 +626,6 @@ function renderGrid(list) {
           <div class="card-title">${w.name}</div>
           <div class="card-team">${w.team}</div>
         </div>
-        <span class="badge ${w.env === 'prod' ? 'b-prod' : 'b-dev'}">${w.env === 'prod' ? 'Produksjon' : 'Utvikling'}</span>
       </div>
       <div class="card-desc">${w.desc}</div>
       <div class="tags">${w.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
@@ -822,7 +778,6 @@ function anim(id, n) {
 // ── Init ──────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   anim('s-total', WS.length);
-  anim('s-prod',  WS.filter(w => w.env === 'prod').length);
   anim('s-reps',  WS.reduce((s, w) => s + w.reports, 0));
   anim('s-teams', new Set(WS.map(w => w.team)).size);
   filter();
