@@ -3,63 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fabric Workspace Catalog</title>
+  <title>Fabric Catalog</title>
   <style>
     :root {
-      --blue:       #0032FF;
-      --blue-dark:  #0025CC;
-      --blue-light: #EEF1FF;
-      --blue-mid:   #C7D0FF;
-      --bg:         #F5F6FA;
-      --card:       #FFFFFF;
-      --text:       #0D0D0D;
-      --muted:      #5A6072;
-      --border:     #DDE1ED;
-      --prod:       #0A7A3E;
-      --dev:        #0032FF;
-      --radius:     8px;
-      --shadow:     0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
+      --blue:      #0032FF;
+      --blue-dk:   #0025CC;
+      --blue-lt:   #EEF1FF;
+      --bg:        #F5F6FA;
+      --card:      #FFFFFF;
+      --text:      #0D0D0D;
+      --muted:     #5A6072;
+      --border:    #DDE1ED;
+      --prod:      #0A7A3E;
+      --radius:    8px;
+      --shadow:    0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 15px; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 15px; }
 
-    /* SSO SCREEN */
-    #sso-screen {
+    /* ── SSO ── */
+    #sso {
       position: fixed; inset: 0; z-index: 1000;
-      background: #F5F6FA;
+      background: var(--bg);
       display: flex; align-items: center; justify-content: center;
+      transition: opacity .35s;
     }
-    #sso-screen.hidden { display: none; }
+    #sso.out { opacity: 0; pointer-events: none; }
 
     .sso-card {
       background: #fff;
       border: 1.5px solid var(--border);
       border-radius: 10px;
       box-shadow: 0 4px 24px rgba(0,0,0,.09);
-      width: 100%;
-      max-width: 400px;
-      margin: 1rem;
+      width: 100%; max-width: 400px; margin: 1rem;
       overflow: hidden;
     }
     .sso-top {
-      background: var(--blue);
-      padding: 2rem 2rem 1.75rem;
-      text-align: center;
+      background: var(--blue); padding: 2rem;
+      text-align: center; color: #fff;
     }
-    .sso-logo {
+    .sso-brand {
       display: inline-flex; align-items: center; gap: .5rem;
-      color: #fff; font-weight: 700; font-size: 1.05rem; margin-bottom: 1.25rem;
+      font-weight: 700; font-size: 1rem; margin-bottom: 1.25rem;
     }
-    .sso-logo-mark {
-      width: 30px; height: 30px; background: rgba(255,255,255,.2);
-      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    .sso-mark {
+      width: 28px; height: 28px;
+      background: rgba(255,255,255,.2); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
     }
-    .sso-top h1 { color: #fff; font-size: 1.1rem; font-weight: 600; margin-bottom: .25rem; }
-    .sso-top p  { color: rgba(255,255,255,.7); font-size: .82rem; }
+    .sso-top h1  { font-size: 1.1rem; font-weight: 600; margin-bottom: .25rem; }
+    .sso-top p   { font-size: .82rem; opacity: .7; }
+    .sso-body    { padding: 1.75rem 2rem; }
+    .sso-footer  { padding: 1rem 2rem; border-top: 1px solid var(--border); text-align: center; font-size: .75rem; color: var(--muted); }
 
-    .sso-body { padding: 1.75rem 2rem; }
-
-    .sso-ms-btn {
+    .ms-btn {
       width: 100%; padding: .7rem 1rem;
       border: 1.5px solid var(--border); border-radius: 6px;
       background: #fff; cursor: pointer;
@@ -68,118 +65,98 @@
       transition: border-color .15s, background .15s;
       margin-bottom: 1.25rem;
     }
-    .sso-ms-btn:hover { border-color: #0078d4; background: #f0f6ff; }
+    .ms-btn:hover { border-color: #0078d4; background: #f0f6ff; }
 
-    .sso-divider {
+    .divider {
       display: flex; align-items: center; gap: .75rem;
       font-size: .75rem; color: var(--muted); margin-bottom: 1.25rem;
     }
-    .sso-divider::before, .sso-divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    .sso-field { margin-bottom: .875rem; }
-    .sso-field label { display: block; font-size: .78rem; font-weight: 600; color: var(--muted); margin-bottom: .35rem; text-transform: uppercase; letter-spacing: .05em; }
-    .sso-field input {
+    .field { margin-bottom: .875rem; }
+    .field label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); margin-bottom: .35rem; text-transform: uppercase; letter-spacing: .05em; }
+    .field input {
       width: 100%; padding: .55rem .75rem;
       border: 1.5px solid var(--border); border-radius: 6px;
       font-size: .875rem; outline: none;
       transition: border-color .15s, box-shadow .15s;
     }
-    .sso-field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,50,255,.1); }
+    .field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,50,255,.1); }
+    .field input.err   { border-color: #e53e3e; }
 
-    .sso-submit {
-      width: 100%; padding: .65rem;
+    .sso-btn {
+      width: 100%; padding: .65rem; margin-top: .25rem;
       background: var(--blue); color: #fff;
       border: none; border-radius: 6px;
-      font-size: .875rem; font-weight: 600;
-      cursor: pointer; margin-top: .25rem;
-      transition: background .15s;
+      font-size: .875rem; font-weight: 600; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: .5rem;
+      transition: background .15s;
     }
-    .sso-submit:hover { background: var(--blue-dark); }
-    .sso-submit.loading { pointer-events: none; opacity: .8; }
-
-    .sso-spinner {
+    .sso-btn:hover { background: var(--blue-dk); }
+    .sso-btn.loading { pointer-events: none; opacity: .8; }
+    .spinner {
       width: 14px; height: 14px;
-      border: 2px solid rgba(255,255,255,.35);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      display: none;
+      border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin .7s linear infinite; display: none;
     }
-    .sso-submit.loading .sso-spinner { display: block; }
-    .sso-submit.loading .sso-btn-text { display: none; }
-
+    .sso-btn.loading .spinner     { display: block; }
+    .sso-btn.loading .btn-label   { display: none; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .sso-footer { padding: 1rem 2rem; border-top: 1px solid var(--border); text-align: center; font-size: .75rem; color: var(--muted); }
-
-    /* App blur when logging in */
-    #app { transition: filter .3s, opacity .3s; }
-    #app.blurred { filter: blur(4px); opacity: .4; pointer-events: none; }
-
-    /* NAV */
+    /* ── NAV ── */
     nav {
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      height: 56px;
-      display: flex;
-      align-items: center;
-      padding: 0 2rem;
-      gap: 1.5rem;
+      background: #fff; border-bottom: 1px solid var(--border);
+      height: 56px; display: flex; align-items: center;
+      padding: 0 2rem; gap: 1.5rem;
       position: sticky; top: 0; z-index: 100;
     }
     .nav-logo {
-      font-weight: 700;
-      font-size: 1rem;
-      color: var(--blue);
-      letter-spacing: -.01em;
+      display: flex; align-items: center; gap: .5rem;
+      font-weight: 700; font-size: .975rem; color: var(--blue);
       text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: .5rem;
     }
-    .nav-logo-mark {
-      width: 28px; height: 28px;
-      background: var(--blue);
-      border-radius: 5px;
+    .nav-mark {
+      width: 28px; height: 28px; background: var(--blue); border-radius: 5px;
       display: flex; align-items: center; justify-content: center;
     }
-    .nav-logo-mark svg { display: block; }
-    .nav-links { margin-left: auto; display: flex; gap: .125rem; }
+    .nav-links { margin-left: auto; display: flex; gap: .125rem; align-items: center; }
     .nav-link {
-      padding: .35rem .75rem;
-      border-radius: 5px;
-      font-size: .85rem;
-      font-weight: 500;
-      color: var(--muted);
-      text-decoration: none;
-      transition: background .12s, color .12s;
+      padding: .35rem .75rem; border-radius: 5px;
+      font-size: .85rem; font-weight: 500; color: var(--muted);
+      text-decoration: none; transition: background .12s, color .12s;
     }
-    .nav-link:hover { background: var(--blue-light); color: var(--blue); }
-    .nav-link.active { background: var(--blue-light); color: var(--blue); font-weight: 600; }
+    .nav-link:hover { background: var(--blue-lt); color: var(--blue); }
+    .nav-user {
+      display: none; align-items: center; gap: .5rem;
+      font-size: .85rem; font-weight: 500; color: var(--text);
+      margin-left: .5rem; padding-left: .75rem;
+      border-left: 1px solid var(--border);
+    }
+    .avatar {
+      width: 28px; height: 28px; background: var(--blue); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
 
-    /* HEADER */
-    .page-header {
-      background: var(--blue);
-      color: #fff;
+    /* ── HEADER ── */
+    .header {
+      background: var(--blue); color: #fff;
       padding: 3rem 2rem 2.5rem;
     }
-    .page-header-inner { max-width: 1200px; margin: 0 auto; }
-    .page-header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: .5rem; }
-    .page-header p { font-size: .95rem; opacity: .8; max-width: 480px; line-height: 1.6; margin-bottom: 2rem; }
-    .stats { display: flex; gap: 2.5rem; flex-wrap: wrap; }
-    .stat .num { font-size: 1.75rem; font-weight: 700; }
-    .stat .lbl { font-size: .75rem; opacity: .65; text-transform: uppercase; letter-spacing: .06em; margin-top: .1rem; }
+    .header-inner { max-width: 1200px; margin: 0 auto; }
+    .header h1 { font-size: 1.9rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: .5rem; }
+    .header p  { font-size: .9rem; opacity: .75; max-width: 460px; line-height: 1.6; margin-bottom: 2rem; }
+    .stats     { display: flex; gap: 2.5rem; flex-wrap: wrap; }
+    .stat .num { font-size: 1.7rem; font-weight: 700; }
+    .stat .lbl { font-size: .72rem; opacity: .6; text-transform: uppercase; letter-spacing: .06em; margin-top: .1rem; }
 
-    /* PAGE */
+    /* ── PAGE ── */
     .page { max-width: 1200px; margin: 0 auto; padding: 2rem; }
 
-    /* FILTER */
-    .filter-bar { display: flex; gap: .625rem; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; }
+    /* ── FILTERS ── */
+    .filters { display: flex; gap: .625rem; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; }
     .search-wrap { position: relative; flex: 1; min-width: 200px; }
-    .search-icon { position: absolute; left: .75rem; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+    .search-ico { position: absolute; left: .75rem; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
     .search-wrap input {
       width: 100%; padding: .5rem .75rem .5rem 2.25rem;
       border: 1.5px solid var(--border); border-radius: var(--radius);
@@ -187,171 +164,205 @@
       transition: border-color .15s, box-shadow .15s;
     }
     .search-wrap input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,50,255,.1); }
-    .filter-pill {
-      padding: .4rem .9rem;
-      border-radius: 20px;
-      border: 1.5px solid var(--border);
-      background: #fff;
-      font-size: .8rem;
-      font-weight: 500;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all .12s;
+
+    .pill {
+      padding: .4rem .9rem; border-radius: 20px;
+      border: 1.5px solid var(--border); background: #fff;
+      font-size: .8rem; font-weight: 500; color: var(--muted);
+      cursor: pointer; transition: all .12s;
       display: flex; align-items: center; gap: .4rem;
     }
-    .filter-pill:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
-    .filter-pill.active.env-prod { background: #e6f4ee; border-color: var(--prod); color: var(--prod); }
-    .filter-pill.active.env-dev  { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
-    .env-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .pill:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
+    .pill.active.f-prod { background: #e6f4ee; border-color: var(--prod); color: var(--prod); }
+    .pill.active.f-dev  { background: var(--blue-lt); border-color: var(--blue); color: var(--blue); }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
-    /* GRID */
+    /* ── GRID ── */
+    .section-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .section-lbl { font-size: .78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+    .result-ct   { font-size: .78rem; color: var(--muted); }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1rem; }
 
-    /* CARD */
+    /* ── CARD ── */
     .card {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 1.25rem;
-      display: flex; flex-direction: column; gap: .875rem;
-      transition: border-color .15s, box-shadow .15s;
-      cursor: default;
+      background: var(--card); border: 1.5px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 1.25rem; display: flex; flex-direction: column; gap: .875rem;
+      transition: border-color .15s, box-shadow .15s; cursor: pointer;
     }
     .card:hover { border-color: var(--blue); box-shadow: 0 4px 16px rgba(0,50,255,.1); }
-
-    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+    .card-head  { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
     .card-title { font-size: .975rem; font-weight: 700; line-height: 1.35; }
-    .card-team { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
-
-    .env-badge {
-      padding: .2rem .55rem;
-      border-radius: 4px;
-      font-size: .7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      flex-shrink: 0;
+    .card-team  { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
+    .badge {
+      padding: .2rem .55rem; border-radius: 4px;
+      font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; flex-shrink: 0;
     }
-    .env-prod { background: #e6f4ee; color: var(--prod); }
-    .env-dev  { background: var(--blue-light); color: var(--blue); }
-
+    .b-prod { background: #e6f4ee; color: var(--prod); }
+    .b-dev  { background: var(--blue-lt); color: var(--blue); }
     .card-desc { font-size: .83rem; color: var(--muted); line-height: 1.55; }
+    .tags { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .tag  { padding: .15rem .5rem; border-radius: 4px; background: var(--bg); border: 1px solid var(--border); font-size: .73rem; color: var(--muted); }
+    .card-foot { border-top: 1px solid var(--border); padding-top: .875rem; margin-top: auto; }
+    .card-meta { display: flex; gap: 1rem; font-size: .75rem; color: var(--muted); margin-bottom: .75rem; flex-wrap: wrap; }
+    .card-open {
+      width: 100%; padding: .5rem;
+      background: var(--blue); color: #fff;
+      border: none; border-radius: 6px;
+      font-size: .85rem; font-weight: 600; cursor: pointer;
+      transition: background .12s;
+    }
+    .card-open:hover { background: var(--blue-dk); }
 
-    .card-tags { display: flex; flex-wrap: wrap; gap: .35rem; }
-    .tag {
-      padding: .15rem .5rem;
-      border-radius: 4px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      font-size: .73rem;
-      color: var(--muted);
+    /* ── DRAWER ── */
+    .drawer-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.35); z-index: 200;
+    }
+    .drawer-overlay.open { display: block; }
+    .drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 480px; max-width: 100vw;
+      background: #fff; z-index: 201;
+      box-shadow: -4px 0 32px rgba(0,0,0,.12);
+      display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-head {
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; gap: 1rem;
+    }
+    .drawer-title { font-size: 1.05rem; font-weight: 700; flex: 1; }
+    .drawer-sub   { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
+    .drawer-close {
+      background: var(--bg); border: none; border-radius: 5px;
+      width: 30px; height: 30px; cursor: pointer; color: var(--muted);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      font-size: .95rem;
+    }
+    .drawer-close:hover { background: var(--border); }
+
+    .drawer-body { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+    /* Steps */
+    .step {
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .step.done   { border-color: var(--prod); }
+    .step.active { border-color: var(--blue); }
+
+    .step-head {
+      padding: .875rem 1rem;
+      display: flex; align-items: center; gap: .75rem;
+      background: #fff; cursor: default;
+    }
+    .step-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--bg); border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700; color: var(--muted); flex-shrink: 0;
+    }
+    .step.active .step-num { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .step.done   .step-num { background: var(--prod); border-color: var(--prod); color: #fff; }
+    .step-name  { font-size: .875rem; font-weight: 600; flex: 1; }
+    .step-check { color: var(--prod); font-size: .9rem; display: none; }
+    .step.done .step-check { display: block; }
+
+    .step-body { padding: 0 1rem 1rem; }
+
+    .step-desc { font-size: .82rem; color: var(--muted); line-height: 1.55; margin-bottom: 1rem; }
+
+    /* Download button */
+    .dl-btn {
+      width: 100%; padding: .6rem 1rem;
+      background: var(--blue); color: #fff;
+      border: none; border-radius: 6px;
+      font-size: .85rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+      transition: background .12s;
+    }
+    .dl-btn:hover { background: var(--blue-dk); }
+    .dl-btn:disabled { opacity: .5; pointer-events: none; }
+
+    /* Upload drop zone */
+    .dropzone {
+      border: 2px dashed var(--border); border-radius: var(--radius);
+      padding: 1.5rem; text-align: center;
+      transition: border-color .15s, background .15s; cursor: pointer;
+    }
+    .dropzone:hover, .dropzone.over { border-color: var(--blue); background: var(--blue-lt); }
+    .dropzone.done-upload { border-color: var(--prod); background: #e6f4ee; border-style: solid; }
+    .dropzone p   { font-size: .82rem; color: var(--muted); margin-top: .4rem; line-height: 1.5; }
+    .dropzone .dz-icon { font-size: 1.4rem; margin-bottom: .25rem; }
+    .dropzone input { display: none; }
+
+    /* Review info box */
+    .info-box {
+      background: var(--blue-lt); border: 1.5px solid #C7D0FF;
+      border-radius: var(--radius); padding: .875rem 1rem;
+      font-size: .82rem; color: var(--text); line-height: 1.55;
     }
 
-    .card-foot {
-      border-top: 1px solid var(--border);
-      padding-top: .875rem;
-      display: flex; flex-direction: column; gap: .75rem;
-      margin-top: auto;
+    /* Action btn */
+    .action-btn {
+      width: 100%; padding: .65rem;
+      border: none; border-radius: 6px;
+      font-size: .875rem; font-weight: 600; cursor: pointer;
+      transition: background .12s; display: flex; align-items: center; justify-content: center; gap: .5rem;
     }
-    .card-meta { display: flex; gap: 1rem; font-size: .75rem; color: var(--muted); flex-wrap: wrap; }
+    .action-btn.primary   { background: var(--blue); color: #fff; }
+    .action-btn.primary:hover { background: var(--blue-dk); }
+    .action-btn.success   { background: #0A7A3E; color: #fff; }
+    .action-btn.success:hover { background: #085f30; }
+    .action-btn:disabled  { opacity: .45; pointer-events: none; }
 
-    .card-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
-    .btn {
-      padding: .38rem .8rem;
-      border-radius: 5px;
-      font-size: .8rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      border: none;
-      display: inline-flex; align-items: center; gap: .3rem;
-      transition: all .12s;
+    /* Status bar at bottom of drawer */
+    .drawer-status {
+      padding: .875rem 1.5rem; border-top: 1px solid var(--border);
+      font-size: .78rem; color: var(--muted);
+      display: flex; align-items: center; gap: .5rem;
     }
-    .btn-primary { background: var(--blue); color: #fff; }
-    .btn-primary:hover { background: var(--blue-dark); }
-    .btn-outline { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
-    .btn-outline:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+    .status-dot.green { background: var(--prod); }
+    .status-dot.blue  { background: var(--blue); }
 
-    /* SECTION */
-    .section-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-    .section-label { font-size: .8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
-    .result-count { font-size: .8rem; color: var(--muted); }
-
-    /* ARCH */
-    .arch { margin-top: 3rem; border-top: 1px solid var(--border); padding-top: 2.5rem; }
-    .arch h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: .375rem; }
-    .arch > p { font-size: .875rem; color: var(--muted); margin-bottom: 1.5rem; }
-    .arch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
-    .arch-card {
-      background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius);
-      padding: 1.125rem; display: flex; flex-direction: column; gap: .5rem;
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      background: var(--text); color: #fff;
+      padding: .65rem 1rem; border-radius: 6px; font-size: .82rem;
+      opacity: 0; transform: translateY(6px);
+      transition: all .25s; pointer-events: none; z-index: 400;
     }
-    .arch-card h4 { font-size: .875rem; font-weight: 700; color: var(--blue); }
-    .arch-card ul { list-style: none; display: flex; flex-direction: column; gap: .3rem; }
-    .arch-card li { font-size: .8rem; color: var(--muted); padding-left: .9rem; position: relative; }
-    .arch-card li::before { content: '–'; position: absolute; left: 0; color: var(--blue-mid); }
-    .arch-card code { font-family: 'Consolas', 'Cascadia Code', monospace; font-size: .8rem; background: var(--bg); padding: .05rem .3rem; border-radius: 3px; }
-
-    /* BRANCH VIZ */
-    .branch-viz {
-      background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius);
-      padding: 1.25rem; margin-bottom: 1.5rem;
-    }
-    .branch-viz h4 { font-size: .875rem; font-weight: 700; margin-bottom: 1rem; color: var(--blue); }
-    .branch-row { display: flex; align-items: center; gap: .75rem; margin-bottom: .75rem; }
-    .branch-row:last-child { margin-bottom: 0; }
-    .branch-line { flex: 1; height: 2px; background: var(--border); position: relative; }
-    .branch-line::after { content: ''; position: absolute; right: 0; top: -4px; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 7px solid var(--border); }
-    .branch-line.blue { background: var(--blue); }
-    .branch-line.blue::after { border-left-color: var(--blue); }
-    .branch-line.green { background: var(--prod); }
-    .branch-line.green::after { border-left-color: var(--prod); }
-    .branch-tag { padding: .2rem .6rem; border-radius: 4px; font-size: .72rem; font-weight: 700; white-space: nowrap; }
-
-    /* MODAL */
-    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 200; align-items: center; justify-content: center; }
-    .overlay.open { display: flex; }
-    .modal {
-      background: #fff; border-radius: 10px; padding: 1.75rem;
-      max-width: 520px; width: calc(100% - 2rem);
-      box-shadow: 0 20px 60px rgba(0,0,0,.18);
-      position: relative;
-    }
-    .modal-close { position: absolute; top: 1rem; right: 1rem; background: var(--bg); border: none; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: .9rem; color: var(--muted); display: flex; align-items: center; justify-content: center; }
-    .modal-close:hover { background: var(--border); }
-    .modal h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; padding-right: 2rem; }
-    .modal-fields { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.25rem; }
-    .field-row { display: grid; grid-template-columns: 110px 1fr; gap: .5rem; font-size: .83rem; }
-    .field-label { color: var(--muted); }
-    .field-val { font-weight: 500; }
-    .field-val code { font-family: 'Consolas', monospace; font-size: .8rem; background: var(--bg); padding: .1rem .35rem; border-radius: 3px; }
-    .modal-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
-
-    /* TOAST */
-    .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--text); color: #fff; padding: .65rem 1rem; border-radius: 6px; font-size: .825rem; opacity: 0; transform: translateY(8px); transition: all .25s; pointer-events: none; z-index: 300; }
     .toast.show { opacity: 1; transform: translateY(0); }
 
-    /* FOOTER */
-    footer { text-align: center; padding: 2rem; font-size: .78rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 3rem; background: #fff; }
+    footer {
+      text-align: center; padding: 2rem;
+      font-size: .78rem; color: var(--muted);
+      border-top: 1px solid var(--border); margin-top: 3rem; background: #fff;
+    }
 
-    @media (max-width: 640px) {
-      .page-header h1 { font-size: 1.5rem; }
+    @media (max-width: 600px) {
+      .header h1 { font-size: 1.5rem; }
       .stats { gap: 1.5rem; }
       .page { padding: 1.25rem; }
       nav { padding: 0 1rem; }
+      .drawer { width: 100vw; }
     }
   </style>
 </head>
 <body>
 
-<!-- SSO LOGIN SCREEN -->
-<div id="sso-screen">
+<!-- SSO -->
+<div id="sso">
   <div class="sso-card">
     <div class="sso-top">
-      <div class="sso-logo">
-        <div class="sso-logo-mark">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <div class="sso-brand">
+        <div class="sso-mark">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
             <rect x="2" y="8" width="4" height="6" fill="white" rx="1"/>
             <rect x="6" y="5" width="4" height="9" fill="white" rx="1"/>
             <rect x="10" y="2" width="4" height="12" fill="white" rx="1"/>
@@ -362,9 +373,8 @@
       <h1>Logg inn</h1>
       <p>Intern tilgang</p>
     </div>
-
     <div class="sso-body">
-      <button class="sso-ms-btn" onclick="ssoMicrosoft()">
+      <button class="ms-btn" onclick="loginMs()">
         <svg width="20" height="20" viewBox="0 0 21 21" fill="none">
           <rect x="1" y="1" width="9" height="9" fill="#F25022"/>
           <rect x="11" y="1" width="9" height="9" fill="#7FBA00"/>
@@ -373,27 +383,21 @@
         </svg>
         Fortsett med Microsoft-konto
       </button>
-
-      <div class="sso-divider">eller logg inn manuelt</div>
-
-      <div class="sso-field">
+      <div class="divider">eller logg inn manuelt</div>
+      <div class="field">
         <label>E-post</label>
-        <input id="sso-email" type="email" placeholder="fornavn.etternavn@firma.no" />
+        <input id="s-email" type="email" placeholder="fornavn.etternavn@firma.no" />
       </div>
-      <div class="sso-field">
+      <div class="field">
         <label>Passord</label>
-        <input id="sso-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')ssoLogin()" />
+        <input id="s-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginManual()" />
       </div>
-
-      <button class="sso-submit" id="sso-btn" onclick="ssoLogin()">
-        <div class="sso-spinner"></div>
-        <span class="sso-btn-text">Logg inn</span>
+      <button class="sso-btn" id="s-btn" onclick="loginManual()">
+        <div class="spinner"></div>
+        <span class="btn-label">Logg inn</span>
       </button>
     </div>
-
-    <div class="sso-footer">
-      Tilgang administreres av IT. Kontakt din IT-administrator ved problemer.
-    </div>
+    <div class="sso-footer">Tilgang administreres av IT-avdelingen.</div>
   </div>
 </div>
 
@@ -402,8 +406,8 @@
 
 <nav>
   <a href="#" class="nav-logo">
-    <div class="nav-logo-mark">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <div class="nav-mark">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
         <rect x="2" y="8" width="4" height="6" fill="white" rx="1"/>
         <rect x="6" y="5" width="4" height="9" fill="white" rx="1"/>
         <rect x="10" y="2" width="4" height="12" fill="white" rx="1"/>
@@ -412,120 +416,121 @@
     Fabric Catalog
   </a>
   <div class="nav-links">
-    <a href="#workspaces" class="nav-link active">Workspaces</a>
-    <a href="#architecture" class="nav-link">Arkitektur</a>
-    <a href="https://github.com/bredeespelid/fabricworkspacetest" class="nav-link" target="_blank">GitHub</a>
+    <a href="#top" class="nav-link">Oversikt</a>
+    <div class="nav-user" id="nav-user">
+      <div class="avatar" id="nav-avatar">?</div>
+      <span id="nav-name">Bruker</span>
+    </div>
   </div>
 </nav>
 
-<div class="page-header">
-  <div class="page-header-inner">
+<div class="header" id="top">
+  <div class="header-inner">
     <h1>Fabric Workspace Catalog</h1>
-    <p>Oversikt over alle Power BI- og Fabric-workspaces. Finn rapport, kildekode og Fabric-lenke samlet på ett sted.</p>
+    <p>Finn rapporten du vil jobbe med og start direkte i Power BI Desktop.</p>
     <div class="stats">
-      <div class="stat"><div class="num" id="stat-total">0</div><div class="lbl">Workspaces</div></div>
-      <div class="stat"><div class="num" id="stat-prod">0</div><div class="lbl">Produksjon</div></div>
-      <div class="stat"><div class="num" id="stat-reports">0</div><div class="lbl">Rapporter</div></div>
-      <div class="stat"><div class="num" id="stat-teams">0</div><div class="lbl">Team</div></div>
+      <div class="stat"><div class="num" id="s-total">0</div><div class="lbl">Workspaces</div></div>
+      <div class="stat"><div class="num" id="s-prod">0</div><div class="lbl">Produksjon</div></div>
+      <div class="stat"><div class="num" id="s-reps">0</div><div class="lbl">Rapporter</div></div>
+      <div class="stat"><div class="num" id="s-teams">0</div><div class="lbl">Team</div></div>
     </div>
   </div>
 </div>
 
 <div class="page">
-
-  <div class="filter-bar" id="workspaces">
+  <div class="filters">
     <div class="search-wrap">
-      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input id="search" type="text" placeholder="Søk workspace, team eller tag..." oninput="applyFilters()" />
+      <svg class="search-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="q" placeholder="Søk rapport eller team..." oninput="filter()" />
     </div>
-    <button class="filter-pill env-prod" id="btn-prod" onclick="toggleEnv('prod')"><span class="env-dot"></span>Prod</button>
-    <button class="filter-pill env-dev"  id="btn-dev"  onclick="toggleEnv('dev')"><span class="env-dot"></span>Dev</button>
-    <button class="filter-pill" onclick="clearFilters()">Nullstill</button>
+    <button class="pill f-prod" id="fp" onclick="toggleEnv('prod')"><span class="dot"></span>Produksjon</button>
+    <button class="pill f-dev"  id="fd" onclick="toggleEnv('dev')"><span class="dot"></span>Utvikling</button>
+    <button class="pill" onclick="clearF()">Nullstill</button>
   </div>
-
   <div class="section-bar">
-    <span class="section-label">Workspaces</span>
-    <span class="result-count" id="ws-count"></span>
+    <span class="section-lbl">Workspaces</span>
+    <span class="result-ct" id="ct"></span>
   </div>
-
-  <div class="grid" id="ws-grid"></div>
-
-  <!-- ARCHITECTURE -->
-  <div class="arch" id="architecture">
-    <h2>Arkitektur</h2>
-    <p>Slik er hvert workspace strukturert i GitHub, og hvordan kode flyter fra utvikling til produksjon.</p>
-
-    <div class="branch-viz">
-      <h4>Branch-strategi</h4>
-      <div class="branch-row">
-        <span class="branch-tag env-dev">dev</span>
-        <div class="branch-line blue"></div>
-        <span style="font-size:.78rem;color:var(--muted)">Utviklingsmiljø — jobb her, push fritt</span>
-      </div>
-      <div class="branch-row">
-        <span style="font-size:.75rem;color:var(--muted);width:60px;text-align:right;">Pull Request</span>
-        <div class="branch-line"></div>
-        <span style="font-size:.78rem;color:var(--muted)">Review + godkjenning kreves</span>
-      </div>
-      <div class="branch-row">
-        <span class="branch-tag env-prod">main</span>
-        <div class="branch-line green"></div>
-        <span style="font-size:.78rem;color:var(--muted)">Produksjon — auto-deploy til Fabric</span>
-      </div>
-    </div>
-
-    <div class="arch-grid">
-      <div class="arch-card">
-        <h4>Repo-struktur</h4>
-        <ul>
-          <li><code>workspace.json</code> — metadata</li>
-          <li><code>rapport.pbix</code> — Power BI Desktop-fil</li>
-          <li><code>model/</code> — TMDL for code review</li>
-          <li><code>dataflows/</code> — JSON-eksport</li>
-          <li><code>.github/workflows/</code> — CI/CD</li>
-        </ul>
-      </div>
-      <div class="arch-card">
-        <h4>For Power BI-utviklere</h4>
-        <ul>
-          <li>Klon repo, sjekk ut <code>dev</code></li>
-          <li>Åpne <code>.pbix</code> i Power BI Desktop</li>
-          <li>Lagre, commit og push til <code>dev</code></li>
-          <li>Lag PR til <code>main</code> for release</li>
-          <li>GitHub Actions deployer automatisk</li>
-        </ul>
-      </div>
-      <div class="arch-card">
-        <h4>CI/CD</h4>
-        <ul>
-          <li>Push til <code>dev</code> → deploy til dev-workspace</li>
-          <li>Merge til <code>main</code> → deploy til prod</li>
-          <li>Fabric REST API via Service Principal</li>
-          <li>Katalogen oppdateres automatisk</li>
-        </ul>
-      </div>
-      <div class="arch-card">
-        <h4>Nytt workspace</h4>
-        <ul>
-          <li>Fork <code>workspace-template</code>-repo</li>
-          <li>Fyll ut <code>workspace.json</code></li>
-          <li>Legg til i <code>repos.txt</code> i katalogen</li>
-          <li>Sett Fabric workspace ID i Secrets</li>
-          <li>Ferdig — klar for utvikling</li>
-        </ul>
-      </div>
-    </div>
-  </div>
+  <div class="grid" id="grid"></div>
 </div>
 
-<footer>
-  Fabric Workspace Catalog &nbsp;·&nbsp; Driftes på GitHub Pages
-</footer>
+<footer>Fabric Workspace Catalog &nbsp;·&nbsp; Driftes på GitHub Pages</footer>
 
-<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div id="modal-body"></div>
+</div> <!-- /app -->
+
+<!-- DRAWER -->
+<div class="drawer-overlay" id="d-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div>
+      <div class="drawer-title" id="d-title"></div>
+      <div class="drawer-sub"   id="d-sub"></div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+
+    <!-- Steg 1: Last ned -->
+    <div class="step active" id="step1">
+      <div class="step-head">
+        <div class="step-num">1</div>
+        <div class="step-name">Last ned og åpne rapporten</div>
+        <span class="step-check">✓</span>
+      </div>
+      <div class="step-body">
+        <p class="step-desc">Last ned rapport-filen og åpne den i Power BI Desktop. Gjør endringene dine og lagre filen når du er ferdig.</p>
+        <button class="dl-btn" id="dl-btn" onclick="downloadPbix()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Last ned rapport
+        </button>
+      </div>
+    </div>
+
+    <!-- Steg 2: Last opp -->
+    <div class="step" id="step2">
+      <div class="step-head">
+        <div class="step-num">2</div>
+        <div class="step-name">Last opp endringene dine</div>
+        <span class="step-check">✓</span>
+      </div>
+      <div class="step-body">
+        <p class="step-desc">Lagre filen i Power BI Desktop, og dra den inn her. Endringene lagres automatisk.</p>
+        <div class="dropzone" id="dz" onclick="document.getElementById('dz-input').click()"
+          ondragover="dzOver(event)" ondragleave="dzLeave()" ondrop="dzDrop(event)">
+          <input type="file" id="dz-input" accept=".pbix" onchange="dzPick(event)" />
+          <div class="dz-icon">📂</div>
+          <strong style="font-size:.85rem;">Dra filen hit</strong>
+          <p>eller klikk for å velge fil &nbsp;·&nbsp; .pbix</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Steg 3: Send til godkjenning -->
+    <div class="step" id="step3">
+      <div class="step-head">
+        <div class="step-num">3</div>
+        <div class="step-name">Send til godkjenning</div>
+        <span class="step-check">✓</span>
+      </div>
+      <div class="step-body">
+        <p class="step-desc">Beskriv kort hva du har endret, så sender vi det til review.</p>
+        <div class="field" style="margin-bottom:.875rem;">
+          <label>Hva har du endret?</label>
+          <input id="change-desc" type="text" placeholder="F.eks. oppdatert salgsfilter for region Nord" />
+        </div>
+        <div class="info-box" style="margin-bottom:.875rem;">
+          Endringen din vil bli gjennomgått før den går til produksjon. Du får beskjed når den er godkjent.
+        </div>
+        <button class="action-btn success" id="submit-btn" onclick="submitReview()" disabled>
+          Send til godkjenning
+        </button>
+      </div>
+    </div>
+
+  </div>
+  <div class="drawer-status">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-txt">Velg en handling for å starte</span>
   </div>
 </div>
 
@@ -538,56 +543,48 @@ const WS = [
     name: "Salg og CRM",
     team: "Salg",
     env: "prod",
-    desc: "Salgsdashboards, pipeline-analyse og CRM-datakvalitet. Kilder: Salesforce, Dynamics 365.",
+    desc: "Salgsdashboards, pipeline-analyse og CRM-datakvalitet.",
     tags: ["salg", "crm", "dynamics"],
     reports: 12,
-    lastDeploy: "2026-05-17",
-    branch: "main",
+    updated: "17. mai 2026",
+    pbix: "salg-dashboard.pbix",
     fabricUrl: "https://app.powerbi.com/groups/salg-prod",
-    githubUrl: "https://github.com/bredeespelid/ws-salg",
-    pbixFile: "salg-dashboard.pbix",
   },
   {
     id: "ws-salg-dev",
     name: "Salg og CRM",
     team: "Salg",
     env: "dev",
-    desc: "Utviklingsversjon av salgs-workspace. Ikke bruk i produksjon.",
-    tags: ["salg", "crm", "utvikling"],
+    desc: "Arbeidsversjon av salgs-workspace. Her kan du jobbe fritt.",
+    tags: ["salg", "crm"],
     reports: 14,
-    lastDeploy: "2026-05-18",
-    branch: "dev",
+    updated: "18. mai 2026",
+    pbix: "salg-dashboard.pbix",
     fabricUrl: "https://app.powerbi.com/groups/salg-dev",
-    githubUrl: "https://github.com/bredeespelid/ws-salg",
-    pbixFile: "salg-dashboard.pbix",
   },
   {
     id: "ws-finans",
     name: "Finans og Regnskap",
     team: "Finans",
     env: "prod",
-    desc: "Månedlig rapportering, budsjettavvik og likviditetsanalyse. Kilde: SAP, Visma.",
+    desc: "Månedlig rapportering, budsjettavvik og likviditetsanalyse.",
     tags: ["finans", "regnskap", "sap"],
     reports: 8,
-    lastDeploy: "2026-05-15",
-    branch: "main",
+    updated: "15. mai 2026",
+    pbix: "finans-monthly.pbix",
     fabricUrl: "https://app.powerbi.com/groups/finans-prod",
-    githubUrl: "https://github.com/bredeespelid/ws-finans",
-    pbixFile: "finans-monthly.pbix",
   },
   {
     id: "ws-verksted",
     name: "Verksted og Ettermarked",
     team: "Ettermarked",
     env: "prod",
-    desc: "Verkstedkapasitet, servicegrad, deler og garantisaker. Kilde: CDK, Kerridge.",
-    tags: ["verksted", "ettermarked", "service"],
+    desc: "Verkstedkapasitet, servicegrad, deler og garantisaker.",
+    tags: ["verksted", "service"],
     reports: 9,
-    lastDeploy: "2026-05-16",
-    branch: "main",
+    updated: "16. mai 2026",
+    pbix: "verksted-kpi.pbix",
     fabricUrl: "https://app.powerbi.com/groups/verksted-prod",
-    githubUrl: "https://github.com/bredeespelid/ws-verksted",
-    pbixFile: "verksted-kpi.pbix",
   },
   {
     id: "ws-brukt",
@@ -597,177 +594,239 @@ const WS = [
     desc: "Innbyttepris, lagringstid, margin og rotasjonsanalyse per modell.",
     tags: ["bruktbil", "innbytte", "margin"],
     reports: 7,
-    lastDeploy: "2026-05-14",
-    branch: "main",
+    updated: "14. mai 2026",
+    pbix: "bruktbil-analyse.pbix",
     fabricUrl: "https://app.powerbi.com/groups/brukt-prod",
-    githubUrl: "https://github.com/bredeespelid/ws-bruktbil",
-    pbixFile: "bruktbil-analyse.pbix",
   },
 ];
 
-let activeEnvs = new Set();
+// ── State ──────────────────────────────────────────
+let envFilter = new Set();
+let currentWs = null;
+let uploadedFile = null;
 
-function toggleEnv(env) {
-  activeEnvs.has(env) ? activeEnvs.delete(env) : activeEnvs.add(env);
-  document.getElementById(`btn-${env}`).classList.toggle('active');
-  applyFilters();
+// ── SSO ───────────────────────────────────────────
+function loginMs() {
+  startLogin();
+}
+function loginManual() {
+  const e = document.getElementById('s-email');
+  const p = document.getElementById('s-pass');
+  if (!e.value.trim()) { e.classList.add('err'); setTimeout(() => e.classList.remove('err'), 1500); e.focus(); return; }
+  if (!p.value)        { p.classList.add('err'); setTimeout(() => p.classList.remove('err'), 1500); p.focus(); return; }
+  startLogin(e.value.trim());
+}
+function startLogin(email) {
+  const btn = document.getElementById('s-btn');
+  btn.classList.add('loading');
+  document.querySelector('.ms-btn').disabled = true;
+  setTimeout(() => completeLogin(email), 1600);
+}
+function completeLogin(email) {
+  const sso = document.getElementById('sso');
+  sso.classList.add('out');
+  setTimeout(() => sso.style.display = 'none', 350);
+
+  const name = email
+    ? email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    : 'Bruker';
+  const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  document.getElementById('nav-name').textContent = name;
+  document.getElementById('nav-avatar').textContent = initials;
+  document.getElementById('nav-user').style.display = 'flex';
 }
 
-function clearFilters() {
-  activeEnvs.clear();
-  ['prod','dev'].forEach(e => document.getElementById(`btn-${e}`).classList.remove('active'));
-  document.getElementById('search').value = '';
-  applyFilters();
+// ── Filters ───────────────────────────────────────
+function toggleEnv(e) {
+  envFilter.has(e) ? envFilter.delete(e) : envFilter.add(e);
+  document.getElementById(e === 'prod' ? 'fp' : 'fd').classList.toggle('active');
+  filter();
 }
-
-function applyFilters() {
-  const q = document.getElementById('search').value.toLowerCase();
+function clearF() {
+  envFilter.clear();
+  document.getElementById('fp').classList.remove('active');
+  document.getElementById('fd').classList.remove('active');
+  document.getElementById('q').value = '';
+  filter();
+}
+function filter() {
+  const q = document.getElementById('q').value.toLowerCase();
   const list = WS.filter(w => {
-    const envOk = activeEnvs.size === 0 || activeEnvs.has(w.env);
-    const qOk   = !q || [w.name, w.team, w.desc, ...w.tags].some(s => s.toLowerCase().includes(q));
-    return envOk && qOk;
+    const eOk = envFilter.size === 0 || envFilter.has(w.env);
+    const qOk = !q || [w.name, w.team, ...w.tags, w.desc].some(s => s.toLowerCase().includes(q));
+    return eOk && qOk;
   });
-  render(list);
+  renderGrid(list);
 }
 
-function render(list) {
-  document.getElementById('ws-count').textContent = `${list.length} av ${WS.length}`;
-  document.getElementById('ws-grid').innerHTML = list.map(w => `
-    <div class="card" onclick="openModal('${w.id}')">
+// ── Grid ──────────────────────────────────────────
+function renderGrid(list) {
+  document.getElementById('ct').textContent = `${list.length} av ${WS.length}`;
+  document.getElementById('grid').innerHTML = list.map(w => `
+    <div class="card" onclick="openDrawer('${w.id}')">
       <div class="card-head">
         <div>
           <div class="card-title">${w.name}</div>
           <div class="card-team">${w.team}</div>
         </div>
-        <span class="env-badge env-${w.env}">${w.env}</span>
+        <span class="badge ${w.env === 'prod' ? 'b-prod' : 'b-dev'}">${w.env === 'prod' ? 'Produksjon' : 'Utvikling'}</span>
       </div>
       <div class="card-desc">${w.desc}</div>
-      <div class="card-tags">${w.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+      <div class="tags">${w.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
       <div class="card-foot">
         <div class="card-meta">
           <span>${w.reports} rapporter</span>
-          <span>Sist deployet ${w.lastDeploy}</span>
-          <span>${w.branch}</span>
+          <span>Oppdatert ${w.updated}</span>
         </div>
-        <div class="card-actions" onclick="event.stopPropagation()">
-          <a class="btn btn-primary" href="${w.fabricUrl}" target="_blank">Apne i Fabric</a>
-          <a class="btn btn-outline" href="${w.githubUrl}" target="_blank">GitHub</a>
-          <button class="btn btn-outline" onclick="copyClone('${w.id}')">Klon repo</button>
-        </div>
+        <button class="card-open">Åpne og rediger</button>
       </div>
     </div>
   `).join('');
 }
 
-function openModal(id) {
-  const w = WS.find(x => x.id === id);
-  if (!w) return;
-  document.getElementById('modal-body').innerHTML = `
-    <h2>${w.name} <span class="env-badge env-${w.env}" style="font-size:.7rem;vertical-align:middle;">${w.env}</span></h2>
-    <div class="modal-fields">
-      <div class="field-row"><span class="field-label">Team</span><span class="field-val">${w.team}</span></div>
-      <div class="field-row"><span class="field-label">Branch</span><span class="field-val"><code>${w.branch}</code></span></div>
-      <div class="field-row"><span class="field-label">Rapporter</span><span class="field-val">${w.reports}</span></div>
-      <div class="field-row"><span class="field-label">Deploy</span><span class="field-val">${w.lastDeploy}</span></div>
-      <div class="field-row"><span class="field-label">PBIX-fil</span><span class="field-val"><code>${w.pbixFile}</code></span></div>
-      <div class="field-row"><span class="field-label">Beskrivelse</span><span class="field-val" style="font-weight:400;color:var(--muted)">${w.desc}</span></div>
-    </div>
-    <div class="modal-actions">
-      <a class="btn btn-primary" href="${w.fabricUrl}" target="_blank">Apne i Fabric</a>
-      <a class="btn btn-outline" href="${w.githubUrl}" target="_blank">GitHub</a>
-      <button class="btn btn-outline" onclick="copyClone('${w.id}')">Kopier git clone</button>
-    </div>
+// ── Drawer ────────────────────────────────────────
+function openDrawer(id) {
+  currentWs = WS.find(w => w.id === id);
+  uploadedFile = null;
+
+  document.getElementById('d-title').textContent = currentWs.name;
+  document.getElementById('d-sub').textContent   = currentWs.team + ' · ' + (currentWs.env === 'prod' ? 'Produksjon' : 'Utvikling');
+
+  // Reset steps
+  setStep(1);
+  resetUpload();
+  document.getElementById('change-desc').value = '';
+  document.getElementById('submit-btn').disabled = true;
+  setStatus('Klar — start med å laste ned rapporten', '');
+
+  document.getElementById('d-overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('d-overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('step' + i);
+    el.classList.remove('active', 'done');
+    if (i < n) el.classList.add('done');
+    if (i === n) el.classList.add('active');
+  });
+}
+
+// ── Download ──────────────────────────────────────
+function downloadPbix() {
+  // In production: direct link to raw file in GitHub repo
+  // Here we simulate the download
+  const btn = document.getElementById('dl-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div style="width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></div> Laster ned...';
+
+  setTimeout(() => {
+    btn.innerHTML = '✓ Lastet ned';
+    btn.style.background = '#0A7A3E';
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step1').classList.add('done');
+    setStep(2);
+    setStatus('Rapport lastet ned — rediger og last opp igjen', 'blue');
+    showToast('Fil lastet ned — åpne den i Power BI Desktop');
+  }, 1200);
+}
+
+// ── Upload / drop zone ────────────────────────────
+function dzOver(e)  { e.preventDefault(); document.getElementById('dz').classList.add('over'); }
+function dzLeave()  { document.getElementById('dz').classList.remove('over'); }
+function dzDrop(e)  { e.preventDefault(); dzLeave(); handleFile(e.dataTransfer.files[0]); }
+function dzPick(e)  { handleFile(e.target.files[0]); }
+
+function handleFile(file) {
+  if (!file || !file.name.endsWith('.pbix')) {
+    showToast('Velg en .pbix-fil');
+    return;
+  }
+  uploadedFile = file;
+  const dz = document.getElementById('dz');
+  dz.classList.add('done-upload');
+  dz.innerHTML = `
+    <div class="dz-icon">✓</div>
+    <strong style="font-size:.85rem;color:#0A7A3E">${file.name}</strong>
+    <p style="color:#0A7A3E">${(file.size / 1024).toFixed(0)} KB — klar til innsending</p>
   `;
-  document.getElementById('overlay').classList.add('open');
+
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step2').classList.add('done');
+  setStep(3);
+  document.getElementById('submit-btn').disabled = false;
+  setStatus('Fil klar — beskriv endringen og send til godkjenning', 'blue');
 }
 
-function closeModal() { document.getElementById('overlay').classList.remove('open'); }
-
-function copyClone(id) {
-  const w = WS.find(x => x.id === id);
-  const cmd = `git clone ${w.githubUrl} && cd ${w.id} && git checkout ${w.branch}`;
-  navigator.clipboard.writeText(cmd).catch(() => {});
-  toast('git clone-kommando kopiert');
+function resetUpload() {
+  const dz = document.getElementById('dz');
+  dz.classList.remove('done-upload', 'over');
+  dz.innerHTML = `
+    <input type="file" id="dz-input" accept=".pbix" onchange="dzPick(event)" />
+    <div class="dz-icon">📂</div>
+    <strong style="font-size:.85rem;">Dra filen hit</strong>
+    <p>eller klikk for å velge fil &nbsp;·&nbsp; .pbix</p>
+  `;
+  dz.onclick = () => document.getElementById('dz-input').click();
 }
 
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2500);
+// ── Submit review ─────────────────────────────────
+function submitReview() {
+  const desc = document.getElementById('change-desc').value.trim();
+  if (!desc) {
+    document.getElementById('change-desc').focus();
+    document.getElementById('change-desc').classList.add('err');
+    setTimeout(() => document.getElementById('change-desc').classList.remove('err'), 1500);
+    return;
+  }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sender...';
+
+  // Simulate API call
+  setTimeout(() => {
+    document.getElementById('step3').classList.remove('active');
+    document.getElementById('step3').classList.add('done');
+    setStatus('Sendt til godkjenning — du får beskjed når den er klar', 'green');
+    btn.textContent = '✓ Sendt til godkjenning';
+    btn.style.background = '#0A7A3E';
+    showToast('Endringen er sendt til gjennomgang');
+  }, 1400);
 }
 
-function animCount(id, n) {
+// ── Utils ─────────────────────────────────────────
+function setStatus(txt, dot) {
+  document.getElementById('status-txt').textContent = txt;
+  const d = document.getElementById('status-dot');
+  d.className = 'status-dot' + (dot ? ' ' + dot : '');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function anim(id, n) {
   const el = document.getElementById(id);
   let i = 0, step = Math.ceil(n / 18);
   const t = setInterval(() => { i = Math.min(i + step, n); el.textContent = i; if (i >= n) clearInterval(t); }, 45);
 }
 
+// ── Init ──────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  const prod  = WS.filter(w => w.env === 'prod').length;
-  const reps  = WS.reduce((s, w) => s + w.reports, 0);
-  const teams = new Set(WS.map(w => w.team)).size;
-  animCount('stat-total', WS.length);
-  animCount('stat-prod', prod);
-  animCount('stat-reports', reps);
-  animCount('stat-teams', teams);
-  applyFilters();
+  anim('s-total', WS.length);
+  anim('s-prod',  WS.filter(w => w.env === 'prod').length);
+  anim('s-reps',  WS.reduce((s, w) => s + w.reports, 0));
+  anim('s-teams', new Set(WS.map(w => w.team)).size);
+  filter();
 });
-
-// ── SSO ──────────────────────────────────────────────
-function ssoMicrosoft() {
-  const btn = document.getElementById('sso-btn');
-  // Simulate redirect to Microsoft — just run the same loading flow
-  document.querySelector('.sso-ms-btn').disabled = true;
-  document.querySelector('.sso-ms-btn').style.opacity = '.5';
-  btn.classList.add('loading');
-  btn.querySelector('.sso-btn-text').style.display = 'none';
-  btn.querySelector('.sso-spinner').style.display = 'block';
-  setTimeout(completeLogin, 1800);
-}
-
-function ssoLogin() {
-  const email = document.getElementById('sso-email').value.trim();
-  const pass  = document.getElementById('sso-pass').value;
-  const btn   = document.getElementById('sso-btn');
-
-  if (!email) {
-    document.getElementById('sso-email').focus();
-    document.getElementById('sso-email').style.borderColor = 'red';
-    setTimeout(() => document.getElementById('sso-email').style.borderColor = '', 1500);
-    return;
-  }
-  if (!pass) {
-    document.getElementById('sso-pass').focus();
-    document.getElementById('sso-pass').style.borderColor = 'red';
-    setTimeout(() => document.getElementById('sso-pass').style.borderColor = '', 1500);
-    return;
-  }
-
-  btn.classList.add('loading');
-  setTimeout(completeLogin, 1600);
-}
-
-function completeLogin() {
-  const screen = document.getElementById('sso-screen');
-  const app    = document.getElementById('app');
-
-  // Fade out login screen
-  screen.style.transition = 'opacity .4s';
-  screen.style.opacity = '0';
-
-  setTimeout(() => {
-    screen.classList.add('hidden');
-    // Show nav item with user name based on email input (or default)
-    const email = document.getElementById('sso-email').value.trim();
-    const name  = email
-      ? email.split('@')[0].replace('.', ' ').replace(/\b\w/g, c => c.toUpperCase())
-      : 'Bruker';
-    const userEl = document.getElementById('nav-user');
-    if (userEl) userEl.textContent = name;
-    document.getElementById('nav-user-wrap').style.display = 'flex';
-  }, 400);
-}
 </script>
 </body>
 </html>
