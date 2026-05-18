@@ -250,7 +250,25 @@
     .action-btn { width: 100%; padding: .65rem; border: none; border-radius: 6px; font-size: .875rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: background .12s; }
     .action-btn.green { background: var(--green); color: #fff; }
     .action-btn.green:hover { background: #085f30; }
+    .action-btn.outline { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
+    .action-btn.outline:hover { border-color: var(--blue); color: var(--blue); }
     .action-btn:disabled { opacity: .45; pointer-events: none; }
+
+    /* Review */
+    .review-box { border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: .875rem; }
+    .review-header { padding: .65rem 1rem; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .5rem; font-size: .78rem; font-weight: 600; color: var(--muted); }
+    .review-comment { padding: .75rem 1rem; border-bottom: 1px solid var(--border); display: flex; gap: .75rem; }
+    .review-comment:last-child { border-bottom: none; }
+    .rc-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; flex-shrink: 0; margin-top: .1rem; }
+    .rc-warn { background: #FEF3C7; color: var(--orange); }
+    .rc-info { background: var(--blue-lt); color: var(--blue); }
+    .rc-ok   { background: #DCFCE7; color: var(--green); }
+    .rc-text { font-size: .8rem; line-height: 1.55; }
+    .rc-text strong { display: block; font-weight: 600; margin-bottom: .1rem; color: var(--text); }
+    .review-actions { display: flex; gap: .5rem; margin-top: .25rem; }
+    .analyze-btn { width: 100%; padding: .6rem; background: #24292f; color: #fff; border: none; border-radius: 6px; font-size: .875rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: background .12s; margin-bottom: .5rem; }
+    .analyze-btn:hover { background: #383f47; }
+    .analyze-btn:disabled { opacity: .5; pointer-events: none; }
 
     /* ── TOAST ── */
     .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--text); color: #fff; padding: .65rem 1rem; border-radius: 6px; font-size: .82rem; opacity: 0; transform: translateY(6px); transition: all .25s; pointer-events: none; z-index: 400; }
@@ -448,17 +466,33 @@
         <div class="step" id="step3">
           <div class="step-head">
             <div class="step-num">3</div>
-            <div class="step-name">Send til godkjenning</div>
+            <div class="step-name">Gjennomgang og innsending</div>
             <span class="step-check">✓</span>
           </div>
           <div class="step-body">
-            <p class="step-desc">Beskriv kort hva du har endret.</p>
-            <div class="field">
-              <label>Hva har du endret?</label>
-              <input id="change-desc" type="text" placeholder="F.eks. oppdatert filter for region Nord" />
+            <div id="review-describe">
+              <p class="step-desc">Beskriv kort hva du har endret, så kjører vi en automatisk gjennomgang.</p>
+              <div class="field">
+                <label>Hva har du endret?</label>
+                <input id="change-desc" type="text" placeholder="F.eks. oppdatert filter for region Nord" />
+              </div>
+              <button class="analyze-btn" id="analyze-btn" onclick="runReview()" disabled>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Kjør gjennomgang
+              </button>
             </div>
-            <div class="info-box">Endringen gjennomgås før den publiseres. Du får beskjed når den er godkjent.</div>
-            <button class="action-btn green" id="submit-btn" onclick="submitReview()" disabled>Send til godkjenning</button>
+
+            <div id="review-result" style="display:none;">
+              <div class="review-box" id="review-comments"></div>
+              <div class="review-actions">
+                <button class="action-btn outline" onclick="editMore()">Rediger mer</button>
+                <button class="action-btn green" onclick="submitAnyway()">Send inn uansett</button>
+              </div>
+            </div>
+
+            <div id="review-done" style="display:none;">
+              <p style="font-size:.85rem;color:var(--green);font-weight:600;text-align:center;padding:.5rem 0;">Sendt inn — du får beskjed når den er publisert.</p>
+            </div>
           </div>
         </div>
 
@@ -773,8 +807,11 @@ function handleFile(file) {
     <p style="color:var(--green)">${(file.size/1024).toFixed(0)} KB — klar til innsending</p>
   `;
   setStep(3);
-  document.getElementById('submit-btn').disabled = false;
-  showToast('Fil klar');
+  document.getElementById('analyze-btn').disabled = false;
+  document.getElementById('change-desc').addEventListener('input', () => {
+    document.getElementById('analyze-btn').disabled = !document.getElementById('change-desc').value.trim();
+  }, { once: true });
+  showToast('Fil klar — beskriv endringen og kjør gjennomgang');
 }
 
 function resetUpload() {
@@ -789,18 +826,75 @@ function resetUpload() {
   dz.onclick = () => document.getElementById('dz-input').click();
 }
 
-// ── Submit ────────────────────────────────────────
-function submitReview() {
+// ── Review ────────────────────────────────────────
+const REVIEW_POOL = [
+  { type:'warn', title:'Unngå CALCULATE uten filter',      body:'Målet "Total salg" bruker CALCULATE uten eksplisitt filter. Dette kan gi uventede resultater på tvers av sider.' },
+  { type:'warn', title:'Skjulte kolonner i modellen',      body:'17 kolonner er synlige i rapporten men brukes ikke i noen visualisering. Vurder å skjule disse for å forenkle modellen.' },
+  { type:'warn', title:'Manglende beskrivelse på mål',     body:'3 av 8 DAX-mål mangler beskrivelse. Legg til beskrivelser for å gjøre modellen enklere å vedlikeholde.' },
+  { type:'info', title:'Bruk av implisitte mål',           body:'Rapporten har 4 implisitte mål (auto-sum). Eksplisitte DAX-mål gir bedre kontroll og gjenbrukbarhet.' },
+  { type:'info', title:'Slicere uten synkronisering',      body:'"Region"-sliceren er ikke synkronisert mellom side 2 og 3. Vurder å slå på slicer-synk.' },
+  { type:'info', title:'Datakilde bruker direktespørring', body:'DirectQuery mot Salesforce kan gi treg lasting ved høy belastning. Vurder import-modus for historiske data.' },
+  { type:'ok',   title:'Relasjoner ser korrekte ut',       body:'Alle relasjoner mellom faktatabell og dimensjoner er én-til-mange. Ingen sirkulære relasjoner funnet.' },
+  { type:'ok',   title:'Sidetall og navigasjon OK',        body:'Alle sideknapper og navigasjonselementer peker til gyldige sider.' },
+];
+
+function runReview() {
   const desc = document.getElementById('change-desc').value.trim();
-  if (!desc) { document.getElementById('change-desc').classList.add('err'); setTimeout(() => document.getElementById('change-desc').classList.remove('err'), 1500); return; }
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = true; btn.textContent = 'Sender...';
+  if (!desc) {
+    const inp = document.getElementById('change-desc');
+    inp.classList.add('err'); setTimeout(() => inp.classList.remove('err'), 1500); return;
+  }
+  const btn = document.getElementById('analyze-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div style="width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></div> Analyserer...';
+
   setTimeout(() => {
-    setStep(4);
-    btn.textContent = '✓ Sendt til godkjenning';
-    btn.style.background = 'var(--green)';
-    showToast('Endringen er sendt til gjennomgang');
-  }, 1400);
+    // Pick 2-3 random comments, always at least one warn and one ok
+    const warns = REVIEW_POOL.filter(r => r.type === 'warn').sort(() => Math.random()-.5).slice(0,2);
+    const infos = REVIEW_POOL.filter(r => r.type === 'info').sort(() => Math.random()-.5).slice(0,1);
+    const oks   = REVIEW_POOL.filter(r => r.type === 'ok').sort(() => Math.random()-.5).slice(0,1);
+    const comments = [...warns, ...infos, ...oks];
+
+    const iconMap = { warn:'!', info:'i', ok:'✓' };
+    const clsMap  = { warn:'rc-warn', info:'rc-info', ok:'rc-ok' };
+    const warnCount = warns.length;
+
+    document.getElementById('review-comments').innerHTML = `
+      <div class="review-header">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+        Automatisk gjennomgang · ${warnCount} ting å se på · ${oks.length} OK
+      </div>
+      ${comments.map(c => `
+        <div class="review-comment">
+          <div class="rc-icon ${clsMap[c.type]}">${iconMap[c.type]}</div>
+          <div class="rc-text"><strong>${c.title}</strong>${c.body}</div>
+        </div>
+      `).join('')}
+    `;
+
+    document.getElementById('review-describe').style.display = 'none';
+    document.getElementById('review-result').style.display = 'block';
+  }, 2000);
+}
+
+function editMore() {
+  document.getElementById('review-result').style.display  = 'none';
+  document.getElementById('review-describe').style.display = 'block';
+  document.getElementById('analyze-btn').disabled = false;
+  document.getElementById('analyze-btn').innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    Kjør gjennomgang på nytt
+  `;
+  setStep(1);
+  resetUpload();
+  showToast('Gå tilbake til Desktop og gjør endringer');
+}
+
+function submitAnyway() {
+  document.getElementById('review-result').style.display = 'none';
+  document.getElementById('review-done').style.display   = 'block';
+  setStep(4);
+  showToast('Sendt inn — venter på publisering');
 }
 
 // ── Utils ─────────────────────────────────────────
